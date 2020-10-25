@@ -112,7 +112,7 @@ class EvervaultCrypto {
             return $this->_encryptArray($data);
         }
 
-        if (is_string($data) || is_numeric($data)) {
+        if (is_string($data) or is_numeric($data)) {
             return $this->_encryptString($data);
         }
 
