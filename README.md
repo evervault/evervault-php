@@ -1,19 +1,17 @@
 # Evervault PHP Bindings
-<p align="center">
+<p>
   <img src="res/logo.svg">
 </p>
 
 
 ## Getting Started
-PHP SDK for [Evervault](https://evervault.com)
-
-#### Prerequisites
+### Prerequisites
 
 To get started with the Evervault PHP SDK, you will need to have created a team on the Evervault Dashboard.
 
 We are currently in invite-only early access. You can apply for early access [here](https://evervault.com).
 
-##### Dependencies
+### Dependencies
 
 **The Evervault SDK requires PHP 7.1.0 or later.**
 
@@ -25,9 +23,9 @@ The bindings also require the following extensions:
 
 If you install the bindings using Composer, these should automatically be installed. Otherwise, please ensure that the extensions are available on your system.
 
-#### Installation
+## Installation
 
-##### Composer
+### Composer
 
 You can install the Evervault PHP bindings using [Composer](http://getcomposer.org/). Simply run the following command:
 
@@ -41,7 +39,7 @@ To use the bindings, use Composer's autoload:
 require_once('vendor/autoload.php');
 ```
 
-##### Manual
+### Manual
 
 If you'd prefer to not use Composer, you can download our [latest release](https://github.com/evervault/evervault-php/releases). Once downloaded, simply include the `init.php` file from the SDK's root folder.
 
@@ -49,7 +47,7 @@ If you'd prefer to not use Composer, you can download our [latest release](https
 require_once('/path/to/evervault-php/init.php');
 ```
 
-#### Quickstart
+## Quickstart
 
 A simple flow looks like:
 
