@@ -1,8 +1,9 @@
 {
     "name": "evervault/evervault-php",
-    "description": "Evervault SDK for PHP",
+    "description": "Evervault Bindings for PHP",
     "type": "library",
     "require": {
+        "php": "^7.1",
         "ext-curl": "^7.3",
         "ext-openssl": "^7.3",
         "ext-json": "^1.7",
