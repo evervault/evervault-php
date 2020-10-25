@@ -22,12 +22,55 @@ class EvervaultCrypto {
         $this->cageKey = $cageKey;
     }
 
-    private function _uuidv4() {
-        $data = openssl_random_pseudo_bytes(16);  
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+    private function _generateBytes($length = 32) {
+        return openssl_random_pseudo_bytes($length);
+    }
 
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    private function _extractPublicKey($key) {
+        return openssl_pkey_get_public(
+            "-----BEGIN PUBLIC KEY-----\n"
+            .chunk_split($this->cageKey, 64, "\n")
+            ."-----END PUBLIC KEY-----"
+        );
+    }
+
+    private function _format($datatype = 'string', $encryptedKey, $keyIv, $encryptedData) {
+        $header = EvervaultUtils::base64url_encode(
+            json_encode(
+                array_merge(
+                    $this->header,
+                    ['datatype' => $datatype]
+                ),
+                JSON_FORCE_OBJECT
+            )
+        );
+
+
+        $payload = EvervaultUtils::base64url_encode(
+            json_encode(
+                [
+                    'cageData' => $encryptedKey,
+                    'keyIv' => $keyIv,
+                    'sharedEncryptedData' => $encryptedData
+                ],
+                JSON_FORCE_OBJECT
+            )
+        );
+
+        $uuid = EvervaultUtils::uuidv4();
+
+        return $header . '.' . $payload . '.' . $uuid;
+    }
+
+    private function _publicEncrypt($data) {
+        openssl_public_encrypt(
+            $data,
+            $encrypted,
+            $this->_extractPublicKey($this->cageKey),
+            OPENSSL_PKCS1_OAEP_PADDING
+        );
+
+        return base64_encode($encrypted);
     }
 
     private function _encryptArray($array) {
@@ -36,23 +79,6 @@ class EvervaultCrypto {
         });
 
         return $array;
-    }
-
-    private function _generateBytes($length = 32) {
-        return openssl_random_pseudo_bytes($length);
-    }
-
-    private function _base64url_encode($data) {
-        $base64 = base64_encode($data);
-
-        return rtrim(
-            strtr(
-                $base64, 
-                '+/', 
-                '-_'
-            ), 
-            '='
-        );
     }
 
     private function _encryptString($string) {
@@ -82,53 +108,6 @@ class EvervaultCrypto {
             throw new EvervaultError('AES-256-GCM is not supported. Please upgrade to PHP >7.1.');
         }
         return 'encrypted'.$string;
-    }
-
-    private function _format($datatype = 'string', $encryptedKey, $keyIv, $encryptedData) {
-        $header = $this->_base64url_encode(
-            json_encode(
-                array_merge(
-                    $this->header,
-                    ['datatype' => $datatype]
-                ),
-                JSON_FORCE_OBJECT
-            )
-        );
-
-
-        $payload = $this->_base64url_encode(
-            json_encode(
-                [
-                    'cageData' => $encryptedKey,
-                    'keyIv' => $keyIv,
-                    'sharedEncryptedData' => $encryptedData
-                ],
-                JSON_FORCE_OBJECT
-            )
-        );
-
-        $uuid = $this->_uuidv4();
-
-        return $header . '.' . $payload . '.' . $uuid;
-    }
-
-    private function _extractPublicKey($key) {
-        return openssl_pkey_get_public(
-            "-----BEGIN PUBLIC KEY-----\n"
-            .chunk_split($this->cageKey, 64, "\n")
-            ."-----END PUBLIC KEY-----"
-        );
-    }
-
-    private function _publicEncrypt($data) {
-        openssl_public_encrypt(
-            $data,
-            $encrypted,
-            $this->_extractPublicKey($this->cageKey),
-            OPENSSL_PKCS1_OAEP_PADDING
-        );
-
-        return base64_encode($encrypted);
     }
 
     public function encryptData($data) {

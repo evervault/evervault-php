@@ -26,8 +26,7 @@ class EvervaultHttp {
             'api-key: '.$this->apiKey,
             'content-type: application/json',
             'accept: application/json',
-            'user-agent: evervault-php/0.0.1',
-            'x-ninja-mode: yes'
+            'user-agent: evervault-php/0.0.1'
         ];
     }
 
