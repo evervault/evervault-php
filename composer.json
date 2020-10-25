@@ -1,0 +1,24 @@
+{
+    "name": "evervault/evervault-php",
+    "description": "Evervault SDK for PHP",
+    "type": "library",
+    "require": {
+        "ext-curl": "^7.3",
+        "ext-openssl": "^7.3",
+        "ext-json": "^1.7",
+        "ext-mbstring": "^7.3",
+        "spomky-labs/php-aes-gcm": "^1.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shane Curran",
+            "email": "shane@evervault.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Evervault": "src/"
+        }
+    }
+}
