@@ -6,8 +6,7 @@
         "ext-curl": "^7.3",
         "ext-openssl": "^7.3",
         "ext-json": "^1.7",
-        "ext-mbstring": "^7.3",
-        "spomky-labs/php-aes-gcm": "^1.2"
+        "ext-mbstring": "^7.3"
     },
     "license": "MIT",
     "authors": [

@@ -18,6 +18,7 @@ The bindings also require the following extensions:
 - [`openssl`](https://www.php.net/manual/en/book.openssl.php)
 - [`curl`](https://secure.php.net/manual/en/book.curl.php)
 - [`json`](https://secure.php.net/manual/en/book.json.php)
+- [`mbstring`](https://secure.php.net/manual/en/book.mbstring.php)
 
 If you install the bindings using Composer, these should automatically be installed. Otherwise, please ensure that the extensions are available on your system.
 
