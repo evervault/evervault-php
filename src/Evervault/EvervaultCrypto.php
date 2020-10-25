@@ -105,7 +105,6 @@ class EvervaultCrypto {
         } else {
             throw new EvervaultError('AES-256-GCM is not supported. Please upgrade to PHP >7.1.');
         }
-        return 'encrypted'.$string;
     }
 
     public function encryptData($data) {
