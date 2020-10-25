@@ -47,8 +47,11 @@ class EvervaultHttp {
 
     private function _handleApiResponse($curl, $response) {
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $requestedUrl = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
 
-        if ($responseCode === 401) {
+        if ($responseCode === 401 and strncmp($requestedUrl, 'https://cage.run/', strlen('https://cage.run')) === 0) {
+            throw new EvervaultError('Your Cage could not be found. Please ensure you have deployed a Cage with the name your provided.');
+        } else if ($responseCode === 401) {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
         } else if ($responseCode !== 200) {
             throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
