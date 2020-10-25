@@ -2,8 +2,6 @@
 
 namespace Evervault;
 
-use AESGCM\AESGCM;
-
 class EvervaultCrypto {
     public $cageKey;
 
