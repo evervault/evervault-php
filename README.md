@@ -2,9 +2,7 @@
   <img src="res/logo.svg">
 </p>
 
-# Evervault PHP Bindings
-
-## Getting Started
+## Evervault PHP Bindings
 ### Prerequisites
 
 To get started with the Evervault PHP SDK, you will need to have created a team on the Evervault Dashboard.
