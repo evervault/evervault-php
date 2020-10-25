@@ -46,6 +46,18 @@ class EvervaultHttp {
         )->key;
     }
 
+    private function _handleApiResponse($curl, $response) {
+        $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        if ($responseCode === 401) {
+            throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
+        } else if ($responseCode !== 200) {
+            throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
+        } else {
+            return json_decode($response);
+        }
+    }
+
     private function _makeApiRequest($method, $path, $headers = [], $body = []) {
         curl_setopt(
             $this->curl, 
@@ -76,9 +88,9 @@ class EvervaultHttp {
             true
         );
 
-        return json_decode(
-            curl_exec($this->curl)
-        );
+        $response = curl_exec($this->curl);
+
+        return $this->_handleApiResponse($this->curl, $response);
     }
 
     private function _makeCageRunRequest($cageName, $headers = [], $body = []) {
@@ -109,9 +121,9 @@ class EvervaultHttp {
             true
         );
 
-        return json_decode(
-            curl_exec($this->curl)
-        );
+        $response = curl_exec($this->curl);
+
+        return $this->_handleApiResponse($this->curl, $response);
     }
 
     public function runCage($cageName, $cageData) {
