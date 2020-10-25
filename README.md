@@ -1,8 +1,8 @@
-# Evervault PHP Bindings
 <p>
   <img src="res/logo.svg">
 </p>
 
+# Evervault PHP Bindings
 
 ## Getting Started
 ### Prerequisites
@@ -68,7 +68,7 @@ $result = $evervault->run('hello-cage', $encrypted);
 
 ## API Reference
 
-#### $evervault->encrypt()
+### $evervault->encrypt()
 
 `$evervault->encrypt()` lets you encrypt data for use in any of your evervault cages. You can use it to store encrypted data to be used in a cage at another time.
 
@@ -80,7 +80,7 @@ $evervault->encrypt($data = array | string)
 | --------- | ---- | ----------- |
 | `$data` | `array` or `string` | Data to be encrypted |
 
-#### $evervault->run()
+### $evervault->run()
 
 `$evervault->run()` lets you invoke your Evervault Cages with a given payload.
 
