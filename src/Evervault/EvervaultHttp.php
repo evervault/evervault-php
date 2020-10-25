@@ -50,7 +50,7 @@ class EvervaultHttp {
         $requestedUrl = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
 
         if ($responseCode === 401 and strncmp($requestedUrl, 'https://cage.run/', strlen('https://cage.run')) === 0) {
-            throw new EvervaultError('Your Cage could not be found. Please ensure you have deployed a Cage with the name your provided.');
+            throw new EvervaultError('Your Cage could not be found. Please ensure you have deployed a Cage with the name you provided.');
         } else if ($responseCode === 401) {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
         } else if ($responseCode !== 200) {
