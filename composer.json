@@ -12,8 +12,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Shane Curran",
-            "email": "shane@evervault.com"
+            "name": "Evervault",
+            "email": "hey@evervault.com"
         }
     ],
     "autoload": {

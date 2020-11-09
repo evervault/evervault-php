@@ -69,7 +69,7 @@ $result = $evervault->run('hello-cage', $encrypted);
 
 ### $evervault->encrypt()
 
-`$evervault->encrypt()` lets you encrypt data for use in any of your evervault cages. You can use it to store encrypted data to be used in a cage at another time.
+`$evervault->encrypt()` lets you encrypt data for use in any of your evervault Cages. You can use it to store encrypted data to be used in a Cage at another time.
 
 ```php
 $evervault->encrypt($data = array | string)
@@ -89,5 +89,13 @@ $evervault->run($cageName = string, $data = array)
 
 | Parameter | Type | Description |
 | --------- | ---- | ----------- |
-| `$cageName` | `string` | Name of the Cage to run |
-| `$data` | `array` | Payload for the Cage |
+| `$cageName` | `string` | Name of the Cage to run. |
+| `$data` | `array` | Payload for the Cage. |
+| `$options` | `array` | [Options for the Cage run.](#Cage-Run-Options) |
+
+#### Cage Run Options
+
+| Option    | Type      | Default | Description                                                                          |
+| --------- | --------- | ------- | ------------------------------------------------------------------------------------ |
+| `async`   | `Boolean` | `False` | Run your Cage in async mode. Async Cage runs will be queued for processing.          |
+| `version` | `Integer` | `Null`  | Specify the version of your Cage to run. By default, the latest version will be run. |
