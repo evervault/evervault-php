@@ -133,7 +133,7 @@ class EvervaultHttp {
         if (in_array('x-async: true', $additionalHeaders)) {
             return $response;
         } else {
-            return $response->$result;
+            return $response->result;
         }
     }
 }
