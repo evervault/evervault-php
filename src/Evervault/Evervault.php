@@ -7,7 +7,7 @@ class Evervault {
     public $httpClient;
     public $configClient;
 
-    const VERSION = '0.0.1';
+    const VERSION = '0.0.2';
 
     function __construct($apiKey, $options = []) {
         // Check if API key is valid
@@ -34,7 +34,10 @@ class Evervault {
         return $this->cryptoClient->encryptData($data);
     }
 
-    public function run($cageName, $cageData) {
-        return $this->httpClient->runCage($cageName, $cageData);
+    public function run($cageName, $cageData, $options=["async" => False, "version" => Null]) {
+        if(!is_null($options) and !is_null($options["version"]) and !is_numeric($options["version"])) {
+            throw new EvervaultError('Cage version must be a number');
+        }
+        return $this->httpClient->runCage($cageName, $cageData, $options);
     }
 }

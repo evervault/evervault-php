@@ -26,7 +26,7 @@ class EvervaultHttp {
             'api-key: '.$this->apiKey,
             'content-type: application/json',
             'accept: application/json',
-            'user-agent: evervault-php/0.0.1'
+            'user-agent: evervault-php/0.0.2'
         ];
     }
 
@@ -128,7 +128,19 @@ class EvervaultHttp {
         return $this->_handleApiResponse($this->curl, $response);
     }
 
-    public function runCage($cageName, $cageData) {
-        return $this->_makeCageRunRequest($cageName, [], $cageData)->result;
+    private function _resolveCageRunHeaders($optionalHeaders){
+        $headerList = [];
+        if($optionalHeaders['async']){
+          $headerList[] = 'x-async: true';
+        }
+        if($optionalHeaders['version'] and is_numeric($optionalHeaders['version'])){
+          $headerList[] = 'x-version-id: '.$optionalHeaders['version'];
+        }
+        return $headerList;
+    }
+
+    public function runCage($cageName, $cageData, $options) {
+        $cageRunHeaders = $this->_resolveCageRunHeaders($options);
+        return $this->_makeCageRunRequest($cageName, $cageRunHeaders, $cageData)->result;
     }
 }
