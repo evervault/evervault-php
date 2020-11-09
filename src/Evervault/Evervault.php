@@ -34,10 +34,21 @@ class Evervault {
         return $this->cryptoClient->encryptData($data);
     }
 
-    public function run($cageName, $cageData, $options=["async" => False, "version" => Null]) {
-        if(!is_null($options) and !is_null($options["version"]) and !is_numeric($options["version"])) {
-            throw new EvervaultError('Cage version must be a number');
+    public function run($cageName, $cageData, $options = []) {
+        $additionalHeaders = [];
+
+        if (!is_null($options['version'])) {
+            if (!is_numeric($options['version'])) {
+                throw new EvervaultError('Cage version must be a number');
+            } else {
+                $additionalHeaders[] = 'x-version-id: ' . $options['version'];
+            }
         }
-        return $this->httpClient->runCage($cageName, $cageData, $options);
+
+        if ($options['async']) {
+            $additionalHeaders[] = 'x-async: true';
+        }
+
+        return $this->httpClient->runCage($cageName, $cageData, $additionalHeaders);
     }
 }
