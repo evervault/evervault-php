@@ -7,7 +7,7 @@ class Evervault {
     public $httpClient;
     public $configClient;
 
-    const VERSION = '0.0.2';
+    const VERSION = '0.0.4';
 
     function __construct($apiKey, $options = []) {
         // Check if API key is valid
