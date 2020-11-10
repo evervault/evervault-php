@@ -69,7 +69,7 @@ $result = $evervault->run('hello-cage', $encrypted);
 
 ### $evervault->encrypt()
 
-`$evervault->encrypt()` lets you encrypt data for use in any of your evervault Cages. You can use it to store encrypted data to be used in a Cage at another time.
+`$evervault->encrypt()` lets you encrypt data for use in any of your Evervault Cages. You can use it to store encrypted data to be used in a Cage at another time.
 
 ```php
 $evervault->encrypt($data = array | string)
