@@ -26,7 +26,7 @@ class EvervaultHttp {
             'api-key: '.$this->apiKey,
             'content-type: application/json',
             'accept: application/json',
-            'user-agent: evervault-php/0.0.1'
+            'user-agent: evervault-php/'.Evervault::VERSION
         ];
     }
 
@@ -45,7 +45,7 @@ class EvervaultHttp {
         )->key;
     }
 
-    private function _handleApiResponse($curl, $response) {
+    private function _handleApiResponse($curl, $response, $headers = []) {
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $requestedUrl = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
 
@@ -60,7 +60,7 @@ class EvervaultHttp {
         }
     }
 
-    private function _makeApiRequest($method, $path, $headers = [], $body = []) {
+    private function _makeApiRequest($method, $path, $body = [], $headers = []) {
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
@@ -91,11 +91,10 @@ class EvervaultHttp {
         );
 
         $response = curl_exec($this->curl);
-
-        return $this->_handleApiResponse($this->curl, $response);
+        return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
-    private function _makeCageRunRequest($cageName, $headers = [], $body = []) {
+    private function _makeCageRunRequest($cageName, $body = [], $headers = []) {
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
@@ -125,10 +124,16 @@ class EvervaultHttp {
 
         $response = curl_exec($this->curl);
 
-        return $this->_handleApiResponse($this->curl, $response);
+        return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
-    public function runCage($cageName, $cageData) {
-        return $this->_makeCageRunRequest($cageName, [], $cageData)->result;
+    public function runCage($cageName, $cageData, $additionalHeaders) {
+        $response = $this->_makeCageRunRequest($cageName, $cageData, $additionalHeaders);
+
+        if (in_array('x-async: true', $additionalHeaders)) {
+            return $response;
+        } else {
+            return $response->result;
+        }
     }
 }
