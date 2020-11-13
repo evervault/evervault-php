@@ -74,7 +74,7 @@ $result = $evervault->run('hello-cage', $encrypted);
 
 ## Reference
 
-At present, there are two functions available in the PHP SDK: `$evervault->encrypt()` and `$evervault->run()`.
+The Evervault PHP SDK exposes two functions.
 
 ### $evervault->encrypt()
 
