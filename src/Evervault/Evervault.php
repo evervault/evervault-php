@@ -7,7 +7,7 @@ class Evervault {
     public $httpClient;
     public $configClient;
 
-    const VERSION = '0.0.4';
+    const VERSION = '0.0.5';
 
     function __construct($apiKey, $options = []) {
         // Check if API key is valid
@@ -15,10 +15,10 @@ class Evervault {
         $this->httpClient = new EvervaultHttp(
             $apiKey,
             $this->configClient->getApiBaseUrl(), 
-            $this->configClient->getCageRunBaseUrl()
+            $this->configClient->getFunctionRunBaseUrl()
         );
         $this->cryptoClient = new EvervaultCrypto(
-            $this->httpClient->getCageKey()
+            $this->httpClient->getAppEcdhKey()
         );
     }
 
@@ -34,12 +34,12 @@ class Evervault {
         return $this->cryptoClient->encryptData($data);
     }
 
-    public function run($cageName, $cageData, $options = []) {
+    public function run($functionName, $functionData, $options = ['version' => 0, 'async' => false]) {
         $additionalHeaders = [];
 
         if (!is_null($options['version'])) {
             if (!is_numeric($options['version'])) {
-                throw new EvervaultError('Cage version must be a number');
+                throw new EvervaultError('Function version must be a number');
             } else {
                 $additionalHeaders[] = 'x-version-id: ' . $options['version'];
             }
@@ -49,6 +49,6 @@ class Evervault {
             $additionalHeaders[] = 'x-async: true';
         }
 
-        return $this->httpClient->runCage($cageName, $cageData, $additionalHeaders);
+        return $this->httpClient->runFunction($functionName, $functionData, $additionalHeaders);
     }
 }

@@ -14,13 +14,6 @@ class EvervaultUtils {
     public static function base64url_encode($data) {
         $base64 = base64_encode($data);
 
-        return rtrim(
-            strtr(
-                $base64, 
-                '+/', 
-                '-_'
-            ), 
-            '='
-        );
+        return preg_replace('/={1,2}$/', '', $base64);
     }
 }
