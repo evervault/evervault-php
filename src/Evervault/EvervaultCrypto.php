@@ -74,7 +74,7 @@ class EvervaultCrypto {
                 NumberSize::bnNumBytes($adapter, $G->getOrder())
             );
 
-            $toHash = $binary . hex2bin("00000001") . $encodedUncompressed;
+            $toHash = $binary . hex2bin('00000001') . $encodedUncompressed;
 
             $hash = hash('sha256', $toHash, true);
             return $hash;

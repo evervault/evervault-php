@@ -39,10 +39,23 @@ class EvervaultHttp {
     }
 
     public function getAppEcdhKey() {
-        return $this->_makeApiRequest(
+        $appKeys = $this->_makeApiRequest(
             'GET',
             $this->appKeyPath,
-        )->ecdhP256Key;
+        );
+
+        return (object) [
+            "appEcdhP256Key" => $appKeys->ecdhP256Key,
+            "appId" => isset($appKeys->appUuid) ? $appKeys->appUuid : $appKeys->teamUuid
+        ];
+    }
+
+    public function createRunToken($functionName, $payload = []) {
+       return $this->_makeApiRequest(
+            'POST',
+            '/v2/functions/'.$functionName.'/run-token',
+            $payload
+        );
     }
 
     private function _handleApiResponse($curl, $response, $headers = []) {
