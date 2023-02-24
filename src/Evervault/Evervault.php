@@ -12,10 +12,12 @@ class Evervault {
     public $outboundRelayCaPath;
     private $relayAuthString;
 
-    private $outboundRelayUrl = 'https://relay.evervault.com:443';
-    private $outboundRelayCaUrl = 'https://ca.evervault.com';
+    private $outboundRelayUrl;
+    private $outboundRelayCaUrl;
 
     function __construct($apiKey, $options = []) {
+        $this->outboundRelayUrl = getenv('EV_TUNNEL_HOSTNAME') ? getenv('EV_TUNNEL_HOSTNAME') : 'https://relay.evervault.com:443';
+        $this->outboundRelayCaUrl = getenv('EV_CERT_HOSTNAME') ? getenv('EV_CERT_HOSTNAME') : 'https://ca.evervault.com';
         // Check if API key is valid
         $this->configClient = new EvervaultConfig();
         $this->httpClient = new EvervaultHttp(

@@ -119,6 +119,32 @@ $evervault->run($functionName = string, $data = array)
 | `async`   | `boolean` | `false` | Run your Function in async mode. Asynchronous Function runs will be queued for processing and return a 200 OK response saying your run has been queued.          |
 | `version` | `integer` | `0`  | Specify the version of your Function to run. By default, the latest version will be run. |
 
+### $evervault->createRunToken()
+
+`$evervault->createRunToken()` creates a single use, time bound token for invoking a Function.
+
+```php
+$evervault->createRunToken($functionName = string, $data = array or object)
+```
+
+| Parameter | Type   | Description                                          |
+| --------- | ------ | ---------------------------------------------------- |
+| `$functionName` | `string` | Name of the Function the Run Token should be created for |
+| `$data`      | `array | object`   | Payload that the Run Token can be used with              |
+
+### $evervault->enableOutboundRelay
+
+`$evervault->enableOutboundRelay()` configures your application to proxy HTTPS requests using [Outbound Relay](/products/outbound-relay) for any requests sent using the cURL handler provided.
+
+```php
+$evervault->enableOutboundRelay($curlHandler = CurlHandle)
+```
+
+| Parameter | Type   | Description                                          |
+| --------- | ------ | ---------------------------------------------------- |
+| `$curlHandler` | `CurlHandle` | Any requests sent using the `CurlHandle` provided will be proxied through Outbound Relay. This will ignore any configuration created in the Evervault Dashboard |
+
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/evervault/evervault-php.
