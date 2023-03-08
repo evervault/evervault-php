@@ -3,20 +3,21 @@
 namespace Evervault;
 
 class EvervaultHttp {
-    private static $apiKey;
-    private static $apiBaseUrl;
-    public static $cageRunBaseUrl;
+    private $apiKey;
+    private $apiBaseUrl;
+    private $functionRunBaseUrl;
 
-    private static $curl;
+    private $curl;
 
-    private $cageKeyPath = '/cages/key';
+    private $appKeyPath = '/cages/key';
+    private $relayConfigPath = '/v2/relay-outbound';
     
-    private $cageKey;
+    private $appKey;
 
-    function __construct($apiKey, $apiBaseUrl, $cageRunBaseUrl) {
+    function __construct($apiKey, $apiBaseUrl, $functionRunBaseUrl) {
         $this->apiKey = $apiKey;
         $this->apiBaseUrl = $apiBaseUrl;
-        $this->cageRunBaseUrl = $cageRunBaseUrl;
+        $this->functionRunBaseUrl = $functionRunBaseUrl;
 
         $this->curl = curl_init();
     }
@@ -34,23 +35,44 @@ class EvervaultHttp {
         return $this->apiBaseUrl . $path;
     }
 
-    private function _buildCageUrl($cageName) {
-        return $this->cageRunBaseUrl . '/' . $cageName;
+    private function _buildFunctionUrl($functionName) {
+        return $this->functionRunBaseUrl . '/' . $functionName;
     }
 
-    public function getCageKey() {
-        return $this->_makeApiRequest(
+    public function getAppEcdhKey() {
+        $appKeys = $this->_makeApiRequest(
             'GET',
-            $this->cageKeyPath,
-        )->key;
+            $this->appKeyPath,
+        );
+
+        return (object) [
+            "appEcdhP256Key" => $appKeys->ecdhP256Key,
+            "appId" => isset($appKeys->appUuid) ? $appKeys->appUuid : $appKeys->teamUuid
+        ];
+    }
+
+    public function getAppRelayConfiguration() {
+        $relayConfig = $this->_makeApiRequest(
+            'GET',
+            $this->relayConfigPath,
+        );
+        return array_keys((array) $relayConfig->outboundDestinations);
+    }
+
+    public function createRunToken($functionName, $payload = []) {
+       return $this->_makeApiRequest(
+            'POST',
+            '/v2/functions/'.$functionName.'/run-token',
+            $payload
+        );
     }
 
     private function _handleApiResponse($curl, $response, $headers = []) {
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $requestedUrl = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
 
-        if ($responseCode === 401 and strncmp($requestedUrl, 'https://cage.run/', strlen('https://cage.run')) === 0) {
-            throw new EvervaultError('Your Cage could not be found. Please ensure you have deployed a Cage with the name you provided.');
+        if ($responseCode === 401 and strncmp($requestedUrl, 'https://run.evervault.com/', strlen('https://run.evervault.com')) === 0) {
+            throw new EvervaultError('Your function could not be found. Please ensure you have deployed a function with the name you provided.');
         } else if ($responseCode === 401) {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
         } else if ($responseCode !== 200) {
@@ -94,11 +116,11 @@ class EvervaultHttp {
         return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
-    private function _makeCageRunRequest($cageName, $body = [], $headers = []) {
+    private function _makefunctionRunRequest($functionName, $body = [], $headers = []) {
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
-            $this->_buildCageUrl($cageName)
+            $this->_buildfunctionUrl($functionName)
         );
 
         curl_setopt(
@@ -127,8 +149,8 @@ class EvervaultHttp {
         return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
-    public function runCage($cageName, $cageData, $additionalHeaders) {
-        $response = $this->_makeCageRunRequest($cageName, $cageData, $additionalHeaders);
+    public function runfunction($functionName, $functionData, $additionalHeaders) {
+        $response = $this->_makefunctionRunRequest($functionName, $functionData, $additionalHeaders);
 
         if (in_array('x-async: true', $additionalHeaders)) {
             return $response;

@@ -2,7 +2,13 @@
 
 # Evervault PHP SDK
 
-The [Evervault](https://evervault.com) PHP SDK is a toolkit for encrypting data as it enters your server, and working with Cages.
+The [Evervault](https://evervault.com) PHP SDK is a toolkit for encrypting data and using the [Evervault Encryption Platform](https://evervault.com) in PHP.
+
+You can use our PHP SDK to:
+
+- Encrypt data server-side
+- Invoke [Functions](https://docs.evervault.com/products/function)
+- Decrypt data through [Outbound Relay](https://docs.evervault.com/products/outbound-relay)
 
 ## Getting Started
 
@@ -68,8 +74,8 @@ $encrypted = $evervault->encrypt([
     'name' => 'Alice'
 ]);
 
-// Process the encrypted data in a Cage
-$result = $evervault->run('hello-cage', $encrypted);
+// Process the encrypted data in a Function
+$result = $evervault->run('hello-function', $encrypted);
 ```
 
 ## Reference
@@ -78,7 +84,11 @@ The Evervault PHP SDK exposes two functions.
 
 ### $evervault->encrypt()
 
-`$evervault->encrypt()` encrypts data for use in your [Cages](https://docs.evervault.com/tutorial). To encrypt data at the server, simply pass in an `array` or a `string` into the `$evervault->encrypt()` function. Store the encrypted data in your database as normal.
+`$evervault->encrypt()` encrypts data using Evervault Encryption. Evervault Strings can be used across all of our products.
+
+To encrypt data using the PHP SDK, simply pass a `string` or `array` into the `$evervault->encrypt()` function. 
+
+The encrypted data can be stored in your database as normal and can be used with any of Evervault’s other services.
 
 ```php
 $evervault->encrypt($data = array | string)
@@ -90,24 +100,50 @@ $evervault->encrypt($data = array | string)
 
 ### $evervault->run()
 
-`$evervault->run()` invokes a Cage with a given payload.
+`$evervault->run()` lets you invoke an Evervault Function with a given payload.
 
 ```php
-$evervault->run($cageName = string, $data = array)
+$evervault->run($functionName = string, $data = array)
 ```
 
 | Parameter | Type | Description |
 | --------- | ---- | ----------- |
-| `$cageName` | `string` | Name of the Cage to run. |
-| `$data` | `array` | Payload for the Cage. |
-| `$options` | `array` | [Options for the Cage run.](#Cage-Run-Options) |
+| `$functionName` | `string` | The name of the Function you want to run. |
+| `$data` | `array` | The data you want to send to the Function. |
+| `$options` | `array` | [Additional options for the Function Run.](#Function-Run-Options) |
 
-#### Cage Run Options
+#### Function Run Options
 
 | Option    | Type      | Default | Description                                                                          |
 | --------- | --------- | ------- | ------------------------------------------------------------------------------------ |
-| `async`   | `Boolean` | `False` | Run your Cage in async mode. Async Cage runs will be queued for processing.          |
-| `version` | `Integer` | `Null`  | Specify the version of your Cage to run. By default, the latest version will be run. |
+| `async`   | `boolean` | `false` | Run your Function in async mode. Asynchronous Function runs will be queued for processing and return a 200 OK response saying your run has been queued.          |
+| `version` | `integer` | `0`  | Specify the version of your Function to run. By default, the latest version will be run. |
+
+### $evervault->createRunToken()
+
+`$evervault->createRunToken()` creates a single use, time bound token for invoking a Function.
+
+```php
+$evervault->createRunToken($functionName = string, $data = array or object)
+```
+
+| Parameter | Type   | Description                                          |
+| --------- | ------ | ---------------------------------------------------- |
+| `$functionName` | `string` | Name of the Function the Run Token should be created for |
+| `$data`      | `array` or `object` | Payload that the Run Token can be used with              |
+
+### $evervault->enableOutboundRelay
+
+`$evervault->enableOutboundRelay()` configures your application to proxy HTTPS requests using [Outbound Relay](/products/outbound-relay) for any requests to Outbound Relay destinations sent using the cURL handler provided.
+
+```php
+$evervault->enableOutboundRelay($curlHandler = CurlHandle)
+```
+
+| Parameter | Type   | Description                                          |
+| --------- | ------ | ---------------------------------------------------- |
+| `$curlHandler` | `CurlHandle` | If the Outbound Relay destination has been added in the [Evervault Dashboard](https://app.evervault.com), any requests sent using the `CurlHandle` provided will be proxied through Outbound Relay. |
+
 
 ## Contributing
 

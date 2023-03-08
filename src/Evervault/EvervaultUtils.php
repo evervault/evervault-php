@@ -14,13 +14,20 @@ class EvervaultUtils {
     public static function base64url_encode($data) {
         $base64 = base64_encode($data);
 
-        return rtrim(
-            strtr(
-                $base64, 
-                '+/', 
-                '-_'
-            ), 
-            '='
-        );
+        return preg_replace('/={1,2}$/', '', $base64);
+    }
+
+    public static function isDecryptionDomain($domain, $decryptionDomains) {
+        $domain = parse_url($domain)['host'];
+
+        foreach ($decryptionDomains as $decryptionDomain) {
+            if ($decryptionDomain === $domain) {
+                return true;
+            } else if (substr($decryptionDomain, 0, 1) === '*' && str_ends_with($domain, substr($decryptionDomain, 1))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
