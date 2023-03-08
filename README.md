@@ -121,7 +121,7 @@ $evervault->run($functionName = string, $data = array)
 
 ### $evervault->createRunToken()
 
-`$evervault->createRunToken()` creates a single use, time bound token for invoking a Function.
+`$evervault->createRunToken()` creates a single use, time bound token for invoking a Function. If the payload is an empty object, the Run Token will be valid for any payload.
 
 ```php
 $evervault->createRunToken($functionName = string, $data = array or object)
