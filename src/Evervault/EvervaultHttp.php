@@ -3,27 +3,28 @@
 namespace Evervault;
 
 class EvervaultHttp {
-    private static $apiKey;
-    private static $apiBaseUrl;
-    public static $functionRunBaseUrl;
+    private $apiKey;
+    private $apiBaseUrl;
+    public $functionRunBaseUrl;
 
-    private static $curl;
+    private $curl;
 
     private $appKeyPath = '/cages/key';
+    private $relayConfigPath = '/v2/relay-outbound';
     
     private $appKey;
 
     function __construct($apiKey, $apiBaseUrl, $functionRunBaseUrl) {
-        self::$apiKey = $apiKey;
-        self::$apiBaseUrl = $apiBaseUrl;
-        self::$functionRunBaseUrl = $functionRunBaseUrl;
+        $this->apiKey = $apiKey;
+        $this->apiBaseUrl = $apiBaseUrl;
+        $this->functionRunBaseUrl = $functionRunBaseUrl;
 
-        self::$curl = curl_init();
+        $this->curl = curl_init();
     }
 
     private function _getDefaultHeaders() {
         return [
-            'api-key: '.self::$apiKey,
+            'api-key: '.$this->apiKey,
             'content-type: application/json',
             'accept: application/json',
             'user-agent: evervault-php/'.Evervault::VERSION
@@ -31,11 +32,11 @@ class EvervaultHttp {
     }
 
     private function _buildApiUrl($path) {
-        return self::$apiBaseUrl . $path;
+        return $this->apiBaseUrl . $path;
     }
 
     private function _buildFunctionUrl($functionName) {
-        return self::$functionRunBaseUrl . '/' . $functionName;
+        return $this->functionRunBaseUrl . '/' . $functionName;
     }
 
     public function getAppEcdhKey() {
@@ -48,6 +49,14 @@ class EvervaultHttp {
             "appEcdhP256Key" => $appKeys->ecdhP256Key,
             "appId" => isset($appKeys->appUuid) ? $appKeys->appUuid : $appKeys->teamUuid
         ];
+    }
+
+    public function getAppRelayConfiguration() {
+        $relayConfig = $this->_makeApiRequest(
+            'GET',
+            $this->relayConfigPath,
+        );
+        return array_keys((array) $relayConfig->outboundDestinations);
     }
 
     public function createRunToken($functionName, $payload = []) {
@@ -75,13 +84,13 @@ class EvervaultHttp {
 
     private function _makeApiRequest($method, $path, $body = [], $headers = []) {
         curl_setopt(
-            self::$curl, 
+            $this->curl, 
             CURLOPT_URL, 
             $this->_buildApiUrl($path)
         );
 
         curl_setopt(
-            self::$curl,
+            $this->curl,
             CURLOPT_HTTPHEADER,
             array_merge(
                 $this->_getDefaultHeaders(), 
@@ -91,31 +100,31 @@ class EvervaultHttp {
 
         if (strtolower($method) === 'post') {
             curl_setopt(
-                self::$curl,
+                $this->curl,
                 CURLOPT_POSTFIELDS,
                 json_encode($body, JSON_FORCE_OBJECT)
             );
         }
 
         curl_setopt(
-            self::$curl,
+            $this->curl,
             CURLOPT_RETURNTRANSFER,
             true
         );
 
-        $response = curl_exec(self::$curl);
-        return $this->_handleApiResponse(self::$curl, $response, $headers);
+        $response = curl_exec($this->curl);
+        return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
     private function _makefunctionRunRequest($functionName, $body = [], $headers = []) {
         curl_setopt(
-            self::$curl, 
+            $this->curl, 
             CURLOPT_URL, 
             $this->_buildfunctionUrl($functionName)
         );
 
         curl_setopt(
-            self::$curl,
+            $this->curl,
             CURLOPT_HTTPHEADER,
             array_merge(
                 $this->_getDefaultHeaders(), 
@@ -124,20 +133,20 @@ class EvervaultHttp {
         );
 
         curl_setopt(
-            self::$curl,
+            $this->curl,
             CURLOPT_POSTFIELDS,
             json_encode($body, JSON_FORCE_OBJECT)
         );
 
         curl_setopt(
-            self::$curl,
+            $this->curl,
             CURLOPT_RETURNTRANSFER,
             true
         );
 
-        $response = curl_exec(self::$curl);
+        $response = curl_exec($this->curl);
 
-        return $this->_handleApiResponse(self::$curl, $response, $headers);
+        return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
     public function runfunction($functionName, $functionData, $additionalHeaders) {
