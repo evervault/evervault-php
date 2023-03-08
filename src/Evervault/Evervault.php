@@ -5,11 +5,11 @@ namespace Evervault;
 class Evervault {
     const VERSION = '0.0.5';
     
-    public $cryptoClient;
-    public $httpClient;
-    public $configClient;
-    public $outboundRelayCaFile;
-    public $outboundRelayCaPath;
+    private $cryptoClient;
+    private $httpClient;
+    private $configClient;
+    private $outboundRelayCaFile;
+    private $outboundRelayCaPath;
     private $relayAuthString;
     private $appKeys;
     private $apiKey;
@@ -17,6 +17,8 @@ class Evervault {
     private $outboundRelayUrl;
     private $outboundRelayCaUrl;
     private $outboundRelayDestinations;
+
+    private $caFilename = '/evervault-ca.pem';
 
     function __construct($apiKey, $options = []) {
         $this->apiKey = $apiKey;
@@ -28,12 +30,20 @@ class Evervault {
             $this->configClient->getApiBaseUrl(), 
             $this->configClient->getFunctionRunBaseUrl()
         );
-        $this->outboundRelayCaFile = tmpfile();
-        fwrite($this->outboundRelayCaFile, file_get_contents($this->outboundRelayCaUrl));
-        $this->outboundRelayCaPath = stream_get_meta_data($this->outboundRelayCaFile)['uri'];
+
+        // If CA doesn't exist, or if CA is >1 minute old then refresh
+        if (!file_exists(sys_get_temp_dir() . $this->caFilename) 
+        || (file_exists(sys_get_temp_dir() . $this->caFilename) 
+            && (time() - filemtime(sys_get_temp_dir() . $this->caFilename)) > (1 * 60))
+            ) {
+            $outboundRelayCaFile = fopen(sys_get_temp_dir() . $this->caFilename, "w");
+            fwrite($outboundRelayCaFile, file_get_contents($this->outboundRelayCaUrl));
+        }
+
+        $this->outboundRelayCaPath = sys_get_temp_dir() . $this->caFilename;
     }
 
-    public function encrypt($data) {
+    private function _createCryptoClientIfNotExists() {
         if (!$this->cryptoClient) {
             if (!$this->appKeys) {
                 $this->appKeys = $this->httpClient->getAppEcdhKey();
@@ -42,6 +52,10 @@ class Evervault {
                 $this->appKeys->appEcdhP256Key
             );
         }
+    }
+
+    public function encrypt($data) {
+        $this->_createCryptoClientIfNotExists();
         if (!$data) {
             throw new EvervaultError('Please provide some data to encrypt.');
         }
@@ -72,10 +86,9 @@ class Evervault {
     }
 
     public function enableOutboundRelay($curlHandler) {
+        $this->_createCryptoClientIfNotExists();
+
         if (!$this->relayAuthString) {
-            if (!$this->appKeys) {
-                $this->appKeys = $this->httpClient->getAppEcdhKey();
-            }
             $this->relayAuthString = $this->appKeys->appId . ':' . $this->apiKey;
         }
 
