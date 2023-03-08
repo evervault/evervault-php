@@ -5,7 +5,7 @@ namespace Evervault;
 class EvervaultHttp {
     private $apiKey;
     private $apiBaseUrl;
-    public $functionRunBaseUrl;
+    private $functionRunBaseUrl;
 
     private $curl;
 
