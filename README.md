@@ -136,13 +136,15 @@ $evervault->createRunToken($functionName = string, $data = array or object)
 
 `$evervault->enableOutboundRelay()` configures your application to proxy HTTPS requests using [Outbound Relay](/products/outbound-relay) for any requests to Outbound Relay destinations sent using the cURL handler provided.
 
+Outbound Relay must be enabled for a `CurlHandle` _after_ the destination URL has been set, and before `curl_exec()` is called.
+
 ```php
 $evervault->enableOutboundRelay($curlHandler = CurlHandle)
 ```
 
 | Parameter | Type   | Description                                          |
 | --------- | ------ | ---------------------------------------------------- |
-| `$curlHandler` | `CurlHandle` | If the Outbound Relay destination has been added in the [Evervault Dashboard](https://app.evervault.com), any requests sent using the `CurlHandle` provided will be proxied through Outbound Relay. |
+| `$curlHandler` | `CurlHandle` | If the destination URL has been added as an Outbound Relay destination in the [Evervault Dashboard](https://app.evervault.com), any requests sent to this destination using the `CurlHandle` provided will be proxied through Outbound Relay. |
 
 
 ## Contributing
