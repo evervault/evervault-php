@@ -28,10 +28,6 @@ class Evervault {
             $this->configClient->getApiBaseUrl(), 
             $this->configClient->getFunctionRunBaseUrl()
         );
-        $appKeys = $this->httpClient->getAppEcdhKey();
-        $this->cryptoClient = new EvervaultCrypto(
-            $appKeys->appEcdhP256Key
-        );
         $this->outboundRelayCaFile = tmpfile();
         fwrite($this->outboundRelayCaFile, file_get_contents($this->outboundRelayCaUrl));
         $this->outboundRelayCaPath = stream_get_meta_data($this->outboundRelayCaFile)['uri'];
