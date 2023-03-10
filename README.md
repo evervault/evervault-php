@@ -130,7 +130,7 @@ $evervault->createRunToken($functionName = string, $data = array or object)
 | Parameter | Type   | Description                                          |
 | --------- | ------ | ---------------------------------------------------- |
 | `$functionName` | `string` | Name of the Function the Run Token should be created for |
-| `$data`      | `array` or `object` | Payload that the Run Token can be used with. If not provided, the payload will not be validated when the function is executed using the generated Run Token. |
+| `$data`      | `array` or `object` | Payload that the Run Token can be used with. This is an optional parameter. If not provided or the payload is an empty object, the Run Token will be valid for any payload. |
 
 ### $evervault->enableOutboundRelay
 
