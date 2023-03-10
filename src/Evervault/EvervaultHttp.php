@@ -98,6 +98,12 @@ class EvervaultHttp {
             )
         );
 
+        curl_setopt(
+            $this->curl,
+            CURLOPT_HTTPGET,
+            true
+        );
+        
         if (strtolower($method) === 'post') {
             curl_setopt(
                 $this->curl,
