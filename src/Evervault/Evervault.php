@@ -105,7 +105,7 @@ class Evervault {
         }
     }
 
-    public function createRunToken($functionName, $payload) {
+    public function createRunToken($functionName, $payload = []) {
         return $this->httpClient->createRunToken($functionName, $payload);
     }
 }
