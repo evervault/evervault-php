@@ -14,8 +14,9 @@ class EvervaultHttp {
     
     private $appKey;
 
-    function __construct($apiKey, $apiBaseUrl, $functionRunBaseUrl) {
+    function __construct($apiKey, $appUuid, $apiBaseUrl, $functionRunBaseUrl) {
         $this->apiKey = $apiKey;
+        $this->appUuid = $appUuid;
         $this->apiBaseUrl = $apiBaseUrl;
         $this->functionRunBaseUrl = $functionRunBaseUrl;
 
@@ -27,7 +28,8 @@ class EvervaultHttp {
             'api-key: '.$this->apiKey,
             'content-type: application/json',
             'accept: application/json',
-            'user-agent: evervault-php/'.Evervault::VERSION
+            'user-agent: evervault-php/'.Evervault::VERSION,
+            'authorization': 'Basic ' . base64_encode($this->appUuid . ':' . $this->apiKey),
         ];
     }
 
@@ -155,7 +157,40 @@ class EvervaultHttp {
         return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
-    public function runfunction($functionName, $functionData, $additionalHeaders) {
+    private function _makeDecryptRequest($data, $headers=[]) {
+        curl_setopt(
+            $this->curl,
+            CURLOPT_URL,
+            $this->_decryptUrl()
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_HTTPHEADER,
+            array_merge(
+                $headers,
+                $this->_getDefaultHeaders()
+            )
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_POSTFIELDS,
+            json_encode($data, JSON_FORCE_OBJECT)
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_RETURNTRANSFER,
+            true
+        );
+
+        $response = curl_exec($this->curl);
+
+        return $this->_handleApiResponse($this->curl, $response);
+    }
+
+    public function runFunction($functionName, $functionData, $additionalHeaders) {
         $response = $this->_makefunctionRunRequest($functionName, $functionData, $additionalHeaders);
 
         if (in_array('x-async: true', $additionalHeaders)) {
@@ -163,5 +198,11 @@ class EvervaultHttp {
         } else {
             return $response->result;
         }
+    }
+
+    public function decrypt($data) {
+        $response = $this->_makeDecryptRequest($data);
+
+        return $response;
     }
 }

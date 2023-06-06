@@ -20,13 +20,15 @@ class Evervault {
 
     private $caFilename = '/evervault-ca.pem';
 
-    function __construct($apiKey, $options = []) {
+    function __construct($apiKey, $appUuid, $options = []) {
         $this->apiKey = $apiKey;
+        $this->appUuid = $appUuid;
         $this->outboundRelayUrl = getenv('EV_TUNNEL_HOSTNAME') ? getenv('EV_TUNNEL_HOSTNAME') : 'https://relay.evervault.com:443';
         $this->outboundRelayCaUrl = getenv('EV_CERT_HOSTNAME') ? getenv('EV_CERT_HOSTNAME') : 'https://ca.evervault.com';
         $this->configClient = new EvervaultConfig();
         $this->httpClient = new EvervaultHttp(
             $apiKey,
+            $appUuid,
             $this->configClient->getApiBaseUrl(), 
             $this->configClient->getFunctionRunBaseUrl()
         );
@@ -65,6 +67,18 @@ class Evervault {
         }
 
         return $this->cryptoClient->encryptData($data);
+    }
+
+    public function decrypt($data) {
+        if (!$data) {
+            throw new EvervaultError('`decrypt()` must be called with an object or buffer');
+        }
+
+        if(!is_array($data)) {
+            throw new EvervaultError('The data value must be an object or byte array');
+        }
+
+        return $this->httpClient->decrypt($data);
     }
 
     public function run($functionName, $functionData, $options = ['version' => 0, 'async' => false]) {

@@ -67,7 +67,7 @@ To make Evervault available for use in your app:
 use \Evervault\Evervault;
 
 // Insert your API key here
-$evervault = new Evervault('MTcy:B1s8/8LRiKG/ARvonWEWLgTQJRoqpVPzZQ47KB8gKlo=');
+$evervault = new Evervault('<API-KEY>', '<APP-ID>');
 
 // Encrypt your sensitive data
 $encrypted = $evervault->encrypt([
@@ -76,6 +76,11 @@ $encrypted = $evervault->encrypt([
 
 // Process the encrypted data in a Function
 $result = $evervault->run('hello-function', $encrypted);
+
+// Decrypt data
+$decrypted = $evervault->decrypt([
+    'encrypted' => $encrypted
+]);
 ```
 
 ## Reference
@@ -131,6 +136,18 @@ $evervault->createRunToken($functionName = string, $data = array or object)
 | --------- | ------ | ---------------------------------------------------- |
 | `$functionName` | `string` | Name of the Function the Run Token should be created for |
 | `$data`      | `array` or `object` | Payload that the Run Token can be used with. This is an optional parameter. If not provided or the payload is an empty object, the Run Token will be valid for any payload. |
+
+### $evervault->decrypt()
+
+`$evervault->decrypt()` decrypts data previously encrypted with `encrypt()` function or through Relay.
+
+```php
+$evervault->decrypt(encrypted)
+```
+
+| Parameter | Type  | Description          |
+| --------- | ----- | -------------------- |
+| encrypted | Array | Data to be decrypted |
 
 ### $evervault->enableOutboundRelay
 
