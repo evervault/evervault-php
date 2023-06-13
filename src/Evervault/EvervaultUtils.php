@@ -17,17 +17,27 @@ class EvervaultUtils {
         return preg_replace('/={1,2}$/', '', $base64);
     }
 
-    public static function isDecryptionDomain($domain, $decryptionDomains) {
+    public static function isDecryptionDomain($domain, $decryptionDomainRegexes) {
         $domain = parse_url($domain)['host'];
 
-        foreach ($decryptionDomains as $decryptionDomain) {
-            if ($decryptionDomain === $domain) {
-                return true;
-            } else if (substr($decryptionDomain, 0, 1) === '*' && str_ends_with($domain, substr($decryptionDomain, 1))) {
+        foreach ($decryptionDomainRegexes as $decryptionDomainRegex) {
+            if (preg_match($decryptionDomainRegex, $domain)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public static function buildDomainRegexFromPattern($pattern) {
+        // Replace globstars with their new equivalent
+        $pattern = preg_replace('/(?<!\\*)\\*\\*+\\./', '*', $pattern);
+        // Escape dots
+        $pattern = preg_replace('/\\./', '\.', $pattern);
+        // Turn stars into regexes
+        $pattern = preg_replace('/(?<!\\*)\\*+/', '.*', $pattern);
+        // Convert *domain patterns to match subdomains and the domain itself
+        $pattern = preg_replace('/(\\.\\*)([^\\\\*.])/', '$1(^|\\.)$2', $pattern);
+        return '/^'.$pattern.'$/i';
     }
 }

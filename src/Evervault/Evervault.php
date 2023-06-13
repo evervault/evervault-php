@@ -7,16 +7,17 @@ class Evervault {
     
     private $cryptoClient;
     private $httpClient;
-    private $configClient;
+    public $configClient;
     private $outboundRelayCaFile;
     private $outboundRelayCaPath;
     private $relayAuthString;
     private $appKeys;
     private $apiKey;
 
-    private $outboundRelayUrl;
+    public $outboundRelayUrl;
     private $outboundRelayCaUrl;
     private $outboundRelayDestinations;
+    private $outboundRelayDestinationRegexes;
 
     private $caFilename = '/evervault-ca.pem';
 
@@ -96,9 +97,16 @@ class Evervault {
             $this->outboundRelayDestinations = $this->httpClient->getAppRelayConfiguration();
         }
 
+        if (!$this->outboundRelayDestinationRegexes) {
+            $this->outboundRelayDestinationRegexes = array_map(
+                'Evervault\EvervaultUtils::buildDomainRegexFromPattern',
+                $this->outboundRelayDestinations
+            );
+        }
+
         $requestUrl = curl_getinfo($curlHandler, CURLINFO_EFFECTIVE_URL);
 
-        if (EvervaultUtils::isDecryptionDomain($requestUrl, $this->outboundRelayDestinations)) {
+        if (EvervaultUtils::isDecryptionDomain($requestUrl, $this->outboundRelayDestinationRegexes)) {
             curl_setopt($curlHandler, CURLOPT_PROXY, $this->outboundRelayUrl);
             curl_setopt($curlHandler, CURLOPT_PROXYUSERPWD, $this->relayAuthString);
             curl_setopt($curlHandler, CURLOPT_CAINFO, $this->outboundRelayCaPath);

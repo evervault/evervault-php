@@ -3,12 +3,12 @@
 namespace Evervault;
 
 class EvervaultConfig {
-    public $apiBaseUrl = 'https://api.evervault.com';
-    public $functionRunBaseUrl = 'https://run.evervault.com';
+    public $apiBaseUrl;
+    public $functionRunBaseUrl;
 
-    public function _construct() {
-        $this->apiBaseUrl = getenv('EV_API_URL') || 'https://api.evervault.com';
-        $thus->functionRunBaseUrl = getenv('EV_CAGE_RUN_URL') || 'https://run.evervault.com';
+    function __construct() {
+        $this->apiBaseUrl = getenv('EV_API_URL') ? getenv('EV_API_URL') : 'https://api.evervault.com';
+        $this->functionRunBaseUrl = getenv('EV_CAGE_RUN_URL') ? getenv('EV_CAGE_RUN_URL') : 'https://run.evervault.com';
     }
 
     public function getApiBaseUrl() {
