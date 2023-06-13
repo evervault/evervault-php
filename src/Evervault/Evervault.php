@@ -7,14 +7,14 @@ class Evervault {
     
     private $cryptoClient;
     private $httpClient;
-    public $configClient;
+    private $configClient;
     private $outboundRelayCaFile;
     private $outboundRelayCaPath;
     private $relayAuthString;
     private $appKeys;
     private $apiKey;
 
-    public $outboundRelayUrl;
+    private $outboundRelayUrl;
     private $outboundRelayCaUrl;
     private $outboundRelayDestinations;
     private $outboundRelayDestinationRegexes;
