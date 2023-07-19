@@ -103,7 +103,8 @@ $evervault->encrypt($data = array | string)
 
 ### $evervault->decrypt()
 
-`$evervault->decrypt()` decrypts data previously encrypted with the `encrypt()` function or through Evervault's Relay (Evervault's encryption proxy). An API Key with the `decrypt` permission must be used to perform this operation.
+`$evervault->decrypt()` decrypts data previously encrypted with the `encrypt()` function or through Evervault's Relay (Evervault's encryption proxy).
+An API Key with the `decrypt` permission must be used to perform this operation.
 
 ```php
 $evervault->decrypt($encrypted = array | string)
@@ -115,7 +116,8 @@ $evervault->decrypt($encrypted = array | string)
 
 ### $evervault->run()
 
-`$evervault->run()` lets you invoke an Evervault Function with a given payload. An API Key with the `run function` permission must be used to perform this operation.
+`$evervault->run()` lets you invoke an Evervault Function with a given payload.
+An API Key with the `run function` permission must be used to perform this operation.
 
 
 ```php
@@ -137,7 +139,8 @@ $evervault->run($functionName = string, $data = array)
 
 ### $evervault->createRunToken()
 
-`$evervault->createRunToken()` creates a single use, time bound token for invoking a Function. If the payload is an empty object, the Run Token will be valid for any payload. An API Key with the `create Run Token` permission must be used to perform this operation.
+`$evervault->createRunToken()` creates a single use, time bound token for invoking a Function. If the payload is an empty object, the Run Token will be valid for any payload.
+An API Key with the `create Run Token` permission must be used to perform this operation.
 
 ```php
 $evervault->createRunToken($functionName = string, $data = array or object)
