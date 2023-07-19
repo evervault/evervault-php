@@ -75,7 +75,7 @@ class Evervault {
 
     public function decrypt($data) {
         if (!$data) {
-            throw new EvervaultError('`decrypt()` must be called with a string, number or object.');
+            throw new EvervaultError('`decrypt()` must be called with a string or object.');
         }
         return $this->httpClient->decrypt($data);
     }
