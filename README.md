@@ -97,9 +97,9 @@ The encrypted data can be stored in your database as normal and can be used with
 $evervault->encrypt($data = array | string)
 ```
 
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `$data` | `array` or `string` | Data to be encrypted |
+| Parameter | Type                | Description          |
+| --------- | ------------------- | -------------------- |
+| `$data`   | `array` or `string` | Data to be encrypted |
 
 ### $evervault->decrypt()
 
@@ -109,9 +109,9 @@ $evervault->encrypt($data = array | string)
 $evervault->decrypt($encrypted = array | string)
 ```
 
-| Parameter | Type                        | Description          |
-| --------- | --------------------------- | -------------------- |
-| encrypted | `array` or `string`         | Data to be decrypted |
+| Parameter    | Type                        | Description          |
+| ------------ | --------------------------- | -------------------- |
+| `$encrypted` | `array` or `string`         | Data to be decrypted |
 
 ### $evervault->run()
 
