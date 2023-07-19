@@ -115,7 +115,7 @@ class EvervaultCrypto {
                 16
             );
 
-            $datatype = is_numeric($string) ? 'number' : '';
+            $datatype = is_numeric($string) ? 'number:' : '';
         
             return $this->_format($datatype, $sharedSecret->ephemeralEcdhPublicKey, $iv, $enc . $tag);
         } else {
