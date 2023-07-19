@@ -29,7 +29,7 @@ class EvervaultHttp {
         $defaultHeaders = [
             'content-type: application/json',
             'accept: application/json',
-            'user-agent: evervault-php/'.Evervault::VERSION,
+            'user-agent: evervault-php/'.Evervault::VERSION
         ];
 
         if ($basicAuth) {
