@@ -106,12 +106,12 @@ $evervault->encrypt($data = array | string)
 `$evervault->decrypt()` decrypts data previously encrypted with the `encrypt()` function or through Evervault's Relay (Evervault's encryption proxy).
 
 ```php
-$evervault->decrypt(encrypted)
+$evervault->decrypt($encrypted = array | string)
 ```
 
-| Parameter | Type                    | Description          |
-| --------- | ----------------------- | -------------------- |
-| encrypted | string or Array         | Data to be decrypted |
+| Parameter | Type                        | Description          |
+| --------- | --------------------------- | -------------------- |
+| encrypted | `array` or `string`         | Data to be decrypted |
 
 ### $evervault->run()
 
