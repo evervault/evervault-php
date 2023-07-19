@@ -31,7 +31,7 @@ class EvervaultUtils {
         return false;
     }
 
-    public static function validateApiKeyAndAppUuid($appUuid, $apiKey) {
+    public static function validateAppUuidAndApiKey($appUuid, $apiKey) {
         if (!$appUuid) {
             throw new EvervaultError('No App ID provided. The App ID can be retrieved in the Evervault dashboard (App Settings).');
         }

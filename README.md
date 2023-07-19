@@ -111,7 +111,7 @@ $evervault->decrypt(encrypted)
 
 | Parameter | Type                    | Description          |
 | --------- | ----------------------- | -------------------- |
-| encrypted | string, number or Array | Data to be decrypted |
+| encrypted | string or Array         | Data to be decrypted |
 
 ### $evervault->run()
 

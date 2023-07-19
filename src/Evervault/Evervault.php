@@ -25,7 +25,7 @@ class Evervault {
         $this->appUuid = $appId;
         $this->apiKey = $apiKey;
 
-        EvervaultUtils::validateApiKeyAndAppUuid($this->appUuid, $this->apiKey);
+        EvervaultUtils::validateAppUuidAndApiKey($this->appUuid, $this->apiKey);
 
         $this->outboundRelayUrl = getenv('EV_TUNNEL_HOSTNAME') ? getenv('EV_TUNNEL_HOSTNAME') : 'https://relay.evervault.com:443';
         $this->outboundRelayCaUrl = getenv('EV_CERT_HOSTNAME') ? getenv('EV_CERT_HOSTNAME') : 'https://ca.evervault.com';
