@@ -31,13 +31,17 @@ class EvervaultUtils {
         return false;
     }
 
-    public static function validateApiKeyAndAppUuid($apiKey, $appUuid) {
-        if (!$apiKey) {
-            throw new EvervaultError('No API key provided. An API Key can be created in the Evervault dashboard.');
+    public static function validateApiKeyAndAppUuid($appUuid, $apiKey) {
+        if (!$appUuid) {
+            throw new EvervaultError('No App ID provided. The App ID can be retrieved in the Evervault dashboard (App Settings).');
         }
 
-        if (!$appUuid) {
-            throw new EvervaultError('No App ID provided. The App ID can be retrieved in the Evervault dashboard.');
+        if (strpos($appUuid, "app_") !== 0) {
+            throw new EvervaultError('The provided App ID is invalid. The App ID can be retrieved in the Evervault dashboard (App Settings).');
+        }
+
+        if (!$apiKey) {
+            throw new EvervaultError('No API key provided. An API Key can be created in the Evervault dashboard.');
         }
 
         if (substr($apiKey, 0, 3) == 'ev:') {

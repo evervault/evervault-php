@@ -25,14 +25,20 @@ class EvervaultHttp {
         $this->curl = curl_init();
     }
 
-    private function _getDefaultHeaders() {
-        return [
-            'api-key: '.$this->apiKey,
+    private function _getDefaultHeaders($basicAuth = false) {
+        $defaultHeaders = [
             'content-type: application/json',
             'accept: application/json',
             'user-agent: evervault-php/'.Evervault::VERSION,
-            'authorization: Basic ' . base64_encode($this->appUuid . ':' . $this->apiKey),
         ];
+
+        if ($basicAuth) {
+            $defaultHeaders[] = 'authorization: Basic ' . base64_encode($this->appUuid . ':' . $this->apiKey);
+        } else {
+            $defaultHeaders[] = 'api-key: '.$this->apiKey;
+        }
+
+        return $defaultHeaders;
     }
 
     private function _buildApiUrl($path) {
@@ -88,7 +94,7 @@ class EvervaultHttp {
         }
     }
 
-    private function _makeApiRequest($method, $path, $body = [], $headers = []) {
+    private function _makeApiRequest($method, $path, $body = [], $headers = [], $basicAuth = false) {
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
@@ -99,7 +105,7 @@ class EvervaultHttp {
             $this->curl,
             CURLOPT_HTTPHEADER,
             array_merge(
-                $this->_getDefaultHeaders(), 
+                $this->_getDefaultHeaders($basicAuth), 
                 $headers
             )
         );
@@ -129,10 +135,12 @@ class EvervaultHttp {
     }
 
     private function _makefunctionRunRequest($functionName, $body = [], $headers = []) {
+        $url = $this->_buildfunctionUrl($functionName);
+
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
-            $this->_buildfunctionUrl($functionName)
+            $url
         );
 
         curl_setopt(
@@ -174,7 +182,7 @@ class EvervaultHttp {
     public function decrypt($data) {
         $response = $this->_makeApiRequest('POST', $this->decryptPath, [
             'data' => $data
-        ]);
+        ], [], true);
         return $response->data;
     }
 }

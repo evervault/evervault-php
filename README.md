@@ -67,7 +67,7 @@ To make Evervault available for use in your app:
 use \Evervault\Evervault;
 
 // Insert your API key here
-$evervault = new Evervault('<API-KEY>', '<APP-ID>');
+$evervault = new Evervault('<APP-ID>', '<API-KEY>');
 
 // Encrypt your sensitive data
 $encrypted = $evervault->encrypt([
@@ -109,8 +109,8 @@ $evervault->encrypt($data = array | string)
 $evervault->decrypt(encrypted)
 ```
 
-| Parameter | Type  | Description          |
-| --------- | ----- | -------------------- |
+| Parameter | Type                    | Description          |
+| --------- | ----------------------- | -------------------- |
 | encrypted | string, number or Array | Data to be decrypted |
 
 ### $evervault->run()
