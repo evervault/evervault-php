@@ -4,6 +4,7 @@ namespace Evervault;
 
 class EvervaultHttp {
     private $apiKey;
+    private $appUuid;
     private $apiBaseUrl;
     private $functionRunBaseUrl;
 
@@ -11,6 +12,7 @@ class EvervaultHttp {
 
     private $appKeyPath = '/cages/key';
     private $relayConfigPath = '/v2/relay-outbound';
+    private $decryptPath = '/decrypt';
     
     private $appKey;
 
@@ -29,7 +31,7 @@ class EvervaultHttp {
             'content-type: application/json',
             'accept: application/json',
             'user-agent: evervault-php/'.Evervault::VERSION,
-            'authorization': 'Basic ' . base64_encode($this->appUuid . ':' . $this->apiKey),
+            'authorization: Basic ' . base64_encode($this->appUuid . ':' . $this->apiKey),
         ];
     }
 
@@ -77,6 +79,8 @@ class EvervaultHttp {
             throw new EvervaultError('Your function could not be found. Please ensure you have deployed a function with the name you provided.');
         } else if ($responseCode === 401) {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
+        } else if ($responseCode === 403) {
+            throw new EvervaultError('Your API key does not have the required permissions to perform this action. You can update your API key permissions in the Evervault Dashboard.');
         } else if ($responseCode !== 200) {
             throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
         } else {
@@ -157,39 +161,6 @@ class EvervaultHttp {
         return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
-    private function _makeDecryptRequest($data, $headers=[]) {
-        curl_setopt(
-            $this->curl,
-            CURLOPT_URL,
-            $this->_decryptUrl()
-        );
-
-        curl_setopt(
-            $this->curl,
-            CURLOPT_HTTPHEADER,
-            array_merge(
-                $headers,
-                $this->_getDefaultHeaders()
-            )
-        );
-
-        curl_setopt(
-            $this->curl,
-            CURLOPT_POSTFIELDS,
-            json_encode($data, JSON_FORCE_OBJECT)
-        );
-
-        curl_setopt(
-            $this->curl,
-            CURLOPT_RETURNTRANSFER,
-            true
-        );
-
-        $response = curl_exec($this->curl);
-
-        return $this->_handleApiResponse($this->curl, $response);
-    }
-
     public function runFunction($functionName, $functionData, $additionalHeaders) {
         $response = $this->_makefunctionRunRequest($functionName, $functionData, $additionalHeaders);
 
@@ -201,8 +172,9 @@ class EvervaultHttp {
     }
 
     public function decrypt($data) {
-        $response = $this->_makeDecryptRequest($data);
-
-        return $response;
+        $response = $this->_makeApiRequest('POST', $this->decryptPath, [
+            'data' => $data
+        ]);
+        return $response->data;
     }
 }

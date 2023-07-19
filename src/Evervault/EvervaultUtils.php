@@ -30,4 +30,22 @@ class EvervaultUtils {
 
         return false;
     }
+
+    public static function validateApiKeyAndAppUuid($apiKey, $appUuid) {
+        if (!$apiKey) {
+            throw new EvervaultError('No API key provided. An API Key can be created in the Evervault dashboard.');
+        }
+
+        if (!$appUuid) {
+            throw new EvervaultError('No App ID provided. The App ID can be retrieved in the Evervault dashboard.');
+        }
+
+        if (substr($apiKey, 0, 3) == 'ev:') {
+            $appUuidHash = substr(base64_encode(hash('sha512', $appUuid, true)), 0, 6);
+            $appUuidHashFromApiKey = explode(':', $apiKey)[4];
+            if ($appUuidHash !== $appUuidHashFromApiKey) {
+                throw new EvervaultError('The provided API key does not belong to the App '. $appUuid . '.');
+            }
+        }
+    }
 }

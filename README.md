@@ -78,9 +78,7 @@ $encrypted = $evervault->encrypt([
 $result = $evervault->run('hello-function', $encrypted);
 
 // Decrypt data
-$decrypted = $evervault->decrypt([
-    'encrypted' => $encrypted
-]);
+$decrypted = $evervault->decrypt($encrypted);
 ```
 
 ## Reference
@@ -102,6 +100,18 @@ $evervault->encrypt($data = array | string)
 | Parameter | Type | Description |
 | --------- | ---- | ----------- |
 | `$data` | `array` or `string` | Data to be encrypted |
+
+### $evervault->decrypt()
+
+`$evervault->decrypt()` decrypts data previously encrypted with `encrypt()` function or through Relay.
+
+```php
+$evervault->decrypt(encrypted)
+```
+
+| Parameter | Type  | Description          |
+| --------- | ----- | -------------------- |
+| encrypted | string, number or Array | Data to be decrypted |
 
 ### $evervault->run()
 
@@ -136,18 +146,6 @@ $evervault->createRunToken($functionName = string, $data = array or object)
 | --------- | ------ | ---------------------------------------------------- |
 | `$functionName` | `string` | Name of the Function the Run Token should be created for |
 | `$data`      | `array` or `object` | Payload that the Run Token can be used with. This is an optional parameter. If not provided or the payload is an empty object, the Run Token will be valid for any payload. |
-
-### $evervault->decrypt()
-
-`$evervault->decrypt()` decrypts data previously encrypted with `encrypt()` function or through Relay.
-
-```php
-$evervault->decrypt(encrypted)
-```
-
-| Parameter | Type  | Description          |
-| --------- | ----- | -------------------- |
-| encrypted | Array | Data to be decrypted |
 
 ### $evervault->enableOutboundRelay
 

@@ -13,6 +13,7 @@ class Evervault {
     private $relayAuthString;
     private $appKeys;
     private $apiKey;
+    private $appUuid;
 
     private $outboundRelayUrl;
     private $outboundRelayCaUrl;
@@ -20,15 +21,18 @@ class Evervault {
 
     private $caFilename = '/evervault-ca.pem';
 
-    function __construct($apiKey, $appUuid, $options = []) {
+    function __construct($apiKey, $appId, $options = []) {
         $this->apiKey = $apiKey;
-        $this->appUuid = $appUuid;
+        $this->appUuid = $appId;
+
+        EvervaultUtils::validateApiKeyAndAppUuid($this->apiKey, $this->appUuid);
+
         $this->outboundRelayUrl = getenv('EV_TUNNEL_HOSTNAME') ? getenv('EV_TUNNEL_HOSTNAME') : 'https://relay.evervault.com:443';
         $this->outboundRelayCaUrl = getenv('EV_CERT_HOSTNAME') ? getenv('EV_CERT_HOSTNAME') : 'https://ca.evervault.com';
         $this->configClient = new EvervaultConfig();
         $this->httpClient = new EvervaultHttp(
             $apiKey,
-            $appUuid,
+            $appId,
             $this->configClient->getApiBaseUrl(), 
             $this->configClient->getFunctionRunBaseUrl()
         );
@@ -62,7 +66,7 @@ class Evervault {
             throw new EvervaultError('Please provide some data to encrypt.');
         }
 
-        if (!(is_string($data) or is_array($data) or is_numeric($data))) {
+        if (!(is_string($data) || is_array($data) || is_numeric($data))) {
             throw new EvervaultError('The data to encrypt must be a string, number or object.');
         }
 
@@ -71,13 +75,8 @@ class Evervault {
 
     public function decrypt($data) {
         if (!$data) {
-            throw new EvervaultError('`decrypt()` must be called with an object or buffer');
+            throw new EvervaultError('`decrypt()` must be called with a string, number or object.');
         }
-
-        if(!is_array($data)) {
-            throw new EvervaultError('The data value must be an object or byte array');
-        }
-
         return $this->httpClient->decrypt($data);
     }
 
