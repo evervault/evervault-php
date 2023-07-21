@@ -4,6 +4,7 @@ namespace Evervault;
 
 class EvervaultHttp {
     private $apiKey;
+    private $appUuid;
     private $apiBaseUrl;
     private $functionRunBaseUrl;
 
@@ -11,24 +12,33 @@ class EvervaultHttp {
 
     private $appKeyPath = '/cages/key';
     private $relayConfigPath = '/v2/relay-outbound';
+    private $decryptPath = '/decrypt';
     
     private $appKey;
 
-    function __construct($apiKey, $apiBaseUrl, $functionRunBaseUrl) {
+    function __construct($apiKey, $appUuid, $apiBaseUrl, $functionRunBaseUrl) {
         $this->apiKey = $apiKey;
+        $this->appUuid = $appUuid;
         $this->apiBaseUrl = $apiBaseUrl;
         $this->functionRunBaseUrl = $functionRunBaseUrl;
 
         $this->curl = curl_init();
     }
 
-    private function _getDefaultHeaders() {
-        return [
-            'api-key: '.$this->apiKey,
+    private function _getDefaultHeaders($basicAuth = false) {
+        $defaultHeaders = [
             'content-type: application/json',
             'accept: application/json',
             'user-agent: evervault-php/'.Evervault::VERSION
         ];
+
+        if ($basicAuth) {
+            $defaultHeaders[] = 'authorization: Basic ' . base64_encode($this->appUuid . ':' . $this->apiKey);
+        } else {
+            $defaultHeaders[] = 'api-key: '.$this->apiKey;
+        }
+
+        return $defaultHeaders;
     }
 
     private function _buildApiUrl($path) {
@@ -75,6 +85,8 @@ class EvervaultHttp {
             throw new EvervaultError('Your function could not be found. Please ensure you have deployed a function with the name you provided.');
         } else if ($responseCode === 401) {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
+        } else if ($responseCode === 403) {
+            throw new EvervaultError('Your API key does not have the required permissions to perform this action. You can update your API key permissions in the Evervault Dashboard.');
         } else if ($responseCode !== 200) {
             throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
         } else {
@@ -82,7 +94,7 @@ class EvervaultHttp {
         }
     }
 
-    private function _makeApiRequest($method, $path, $body = [], $headers = []) {
+    private function _makeApiRequest($method, $path, $body = [], $headers = [], $basicAuth = false) {
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
@@ -93,7 +105,7 @@ class EvervaultHttp {
             $this->curl,
             CURLOPT_HTTPHEADER,
             array_merge(
-                $this->_getDefaultHeaders(), 
+                $this->_getDefaultHeaders($basicAuth), 
                 $headers
             )
         );
@@ -123,10 +135,12 @@ class EvervaultHttp {
     }
 
     private function _makefunctionRunRequest($functionName, $body = [], $headers = []) {
+        $url = $this->_buildfunctionUrl($functionName);
+
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
-            $this->_buildfunctionUrl($functionName)
+            $url
         );
 
         curl_setopt(
@@ -155,7 +169,7 @@ class EvervaultHttp {
         return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
-    public function runfunction($functionName, $functionData, $additionalHeaders) {
+    public function runFunction($functionName, $functionData, $additionalHeaders) {
         $response = $this->_makefunctionRunRequest($functionName, $functionData, $additionalHeaders);
 
         if (in_array('x-async: true', $additionalHeaders)) {
@@ -163,5 +177,12 @@ class EvervaultHttp {
         } else {
             return $response->result;
         }
+    }
+
+    public function decrypt($data) {
+        $response = $this->_makeApiRequest('POST', $this->decryptPath, [
+            'data' => $data
+        ], [], true);
+        return $response->data;
     }
 }

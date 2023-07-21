@@ -67,7 +67,7 @@ To make Evervault available for use in your app:
 use \Evervault\Evervault;
 
 // Insert your API key here
-$evervault = new Evervault('MTcy:B1s8/8LRiKG/ARvonWEWLgTQJRoqpVPzZQ47KB8gKlo=');
+$evervault = new Evervault('<APP-ID>', '<API-KEY>');
 
 // Encrypt your sensitive data
 $encrypted = $evervault->encrypt([
@@ -76,6 +76,9 @@ $encrypted = $evervault->encrypt([
 
 // Process the encrypted data in a Function
 $result = $evervault->run('hello-function', $encrypted);
+
+// Decrypt data
+$decrypted = $evervault->decrypt($encrypted);
 ```
 
 ## Reference
@@ -94,13 +97,28 @@ The encrypted data can be stored in your database as normal and can be used with
 $evervault->encrypt($data = array | string)
 ```
 
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `$data` | `array` or `string` | Data to be encrypted |
+| Parameter | Type                | Description          |
+| --------- | ------------------- | -------------------- |
+| `$data`   | `array` or `string` | Data to be encrypted |
+
+### $evervault->decrypt()
+
+`$evervault->decrypt()` decrypts data previously encrypted with the `encrypt()` function or through Evervault's Relay (Evervault's encryption proxy).
+An API Key with the `decrypt` permission must be used to perform this operation.
+
+```php
+$evervault->decrypt($encrypted = array | string)
+```
+
+| Parameter    | Type                        | Description          |
+| ------------ | --------------------------- | -------------------- |
+| `$encrypted` | `array` or `string`         | Data to be decrypted |
 
 ### $evervault->run()
 
 `$evervault->run()` lets you invoke an Evervault Function with a given payload.
+An API Key with the `run function` permission must be used to perform this operation.
+
 
 ```php
 $evervault->run($functionName = string, $data = array)
@@ -122,6 +140,7 @@ $evervault->run($functionName = string, $data = array)
 ### $evervault->createRunToken()
 
 `$evervault->createRunToken()` creates a single use, time bound token for invoking a Function. If the payload is an empty object, the Run Token will be valid for any payload.
+An API Key with the `create Run Token` permission must be used to perform this operation.
 
 ```php
 $evervault->createRunToken($functionName = string, $data = array or object)
