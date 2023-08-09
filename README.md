@@ -180,7 +180,7 @@ $token = $evervault->createClientSideDecryptToken([
 
 | Parameter | Type    | Description                                                                                                                                       |
 | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| data      | Array   | (Optional) Payload to lock the token down to. Token can be used to decrypt anything if not provided.                                              |
+| data      | Array   | The payload the token will be used to decrypt.                                                                                                    |
 | expiry    | Integer | (Optional) A future time (in UNIX seconds) in which the token should expire. If not provided, the expiry will default to 5 minutes in the future. |
 
 ### $evervault->enableOutboundRelay

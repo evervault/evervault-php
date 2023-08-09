@@ -81,6 +81,14 @@ class Evervault {
     }
 
     public function createClientSideDecryptToken($data, $expiry) {
+        if (!$data) {
+            throw new EvervaultError('Please provide a payload');
+        }
+
+        if ($expiry) {
+            $expiry = $expiry * 1000;
+        }
+        
         return $this->httpClient->createToken("decrypt:api", $data, $expiry);
     }
 
