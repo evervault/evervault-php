@@ -49,6 +49,14 @@ class EvervaultHttp {
         return $this->functionRunBaseUrl . '/' . $functionName;
     }
 
+    private function _decryptUrl() {
+        return $this->apiBaseUrl . '/decrypt';
+    }
+
+    private function _createTokenUrl() {
+        return $this->apiBaseUrl . '/client-side-tokens';
+    }
+
     public function getAppEcdhKey() {
         $appKeys = $this->_makeApiRequest(
             'GET',
@@ -169,6 +177,72 @@ class EvervaultHttp {
         return $this->_handleApiResponse($this->curl, $response, $headers);
     }
 
+    private function _makeCreateTokenRequest($payload, $headers=[]) {
+        curl_setopt(
+            $this->curl,
+            CURLOPT_URL,
+            $this->_createTokenUrl()
+        )
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_HTTPHEADER,
+            array_merge(
+                $headers,
+                $this->_getDefaultHeaders()
+            )
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_POSTFIELDS,
+            json_encode($payload, JSON_FORCE_OBJECT)
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_RETURNTRANSFER,
+            true
+        );
+
+        $response = curl_exec($this->curl);
+
+        return $this->_handleApiResponse($this->curl, $response);
+    }
+
+    private function _makeDecryptRequest($data, $headers=[]) {
+        curl_setopt(
+            $this->curl,
+            CURLOPT_URL,
+            $this->_decryptUrl()
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_HTTPHEADER,
+            array_merge(
+                $headers,
+                $this->_getDefaultHeaders()
+            )
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_POSTFIELDS,
+            json_encode($data, JSON_FORCE_OBJECT)
+        );
+
+        curl_setopt(
+            $this->curl,
+            CURLOPT_RETURNTRANSFER,
+            true
+        );
+
+        $response = curl_exec($this->curl);
+
+        return $this->_handleApiResponse($this->curl, $response);
+    }
+
     public function runFunction($functionName, $functionData, $additionalHeaders) {
         $response = $this->_makefunctionRunRequest($functionName, $functionData, $additionalHeaders);
 
@@ -184,5 +258,17 @@ class EvervaultHttp {
             'data' => $data
         ], [], true);
         return $response->data;
+    }
+
+    public function createToken($action, $data, $expiry) {
+        $payload = array(
+            'action' => $action,
+            'payload' => $data,
+            'expiry' => $expiry,
+        );
+
+        $response = $this->_makeCreateTokenRequest($payload);
+
+        return $response;
     }
 }

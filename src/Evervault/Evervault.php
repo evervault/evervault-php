@@ -80,6 +80,10 @@ class Evervault {
         return $this->httpClient->decrypt($data);
     }
 
+    public function createClientSideDecryptToken($data, $expiry) {
+        return $this->httpClient->createToken("decrypt:api", $data, $expiry);
+    }
+
     public function run($functionName, $functionData, $options = ['version' => 0, 'async' => false]) {
         $additionalHeaders = [];
 

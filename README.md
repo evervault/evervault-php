@@ -151,6 +151,38 @@ $evervault->createRunToken($functionName = string, $data = array or object)
 | `$functionName` | `string` | Name of the Function the Run Token should be created for |
 | `$data`      | `array` or `object` | Payload that the Run Token can be used with. This is an optional parameter. If not provided or the payload is an empty object, the Run Token will be valid for any payload. |
 
+### $evervault->decrypt()
+
+`$evervault->decrypt()` decrypts data previously encrypted with `encrypt()` function or through Relay.
+
+```php
+$evervault->decrypt(encrypted)
+```
+
+| Parameter | Type  | Description          |
+| --------- | ----- | -------------------- |
+| encrypted | Array | Data to be decrypted |
+
+### $evervault->createClientSideDecryptToken()
+
+`$evervault->createClientSideDecryptToken()` creates a time-bound token that can be used to decrypt previously encrypted data.
+
+If the `$data` parameter is provided, the token can only be used to decrypt that specific payload. Otherwise, the token can be used to decrypt any payload.
+
+The `$expiry` parameter sets the expiry for the token. It is UNIX time in seconds. It defaults to 5 minutes into the future if not provided. The max time is 10 minutes into the future.
+
+```php
+$timeInFiveMinutes = time() + 5*60;
+$token = $evervault->createClientSideDecryptToken([
+    'encrypted' => $encrypted
+], $timeInFiveMinutes);
+```
+
+| Parameter | Type    | Description                                                                                                                                       |
+| --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| data      | Array   | (Optional) Payload to lock the token down to. Token can be used to decrypt anything if not provided.                                              |
+| expiry    | Integer | (Optional) A future time (in UNIX seconds) in which the token should expire. If not provided, the expiry will default to 5 minutes in the future. |
+
 ### $evervault->enableOutboundRelay
 
 `$evervault->enableOutboundRelay()` configures your application to proxy HTTPS requests using [Outbound Relay](/products/outbound-relay) for any requests to Outbound Relay destinations sent using the cURL handler provided.
