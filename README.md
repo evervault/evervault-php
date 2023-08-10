@@ -151,18 +151,6 @@ $evervault->createRunToken($functionName = string, $data = array or object)
 | `$functionName` | `string` | Name of the Function the Run Token should be created for |
 | `$data`      | `array` or `object` | Payload that the Run Token can be used with. This is an optional parameter. If not provided or the payload is an empty object, the Run Token will be valid for any payload. |
 
-### $evervault->decrypt()
-
-`$evervault->decrypt()` decrypts data previously encrypted with `encrypt()` function or through Relay.
-
-```php
-$evervault->decrypt(encrypted)
-```
-
-| Parameter | Type  | Description          |
-| --------- | ----- | -------------------- |
-| encrypted | Array | Data to be decrypted |
-
 ### $evervault->createClientSideDecryptToken()
 
 `$evervault->createClientSideDecryptToken()` creates a time-bound token that can be used to decrypt previously encrypted data.
