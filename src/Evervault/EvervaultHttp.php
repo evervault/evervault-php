@@ -13,6 +13,7 @@ class EvervaultHttp {
     private $appKeyPath = '/cages/key';
     private $relayConfigPath = '/v2/relay-outbound';
     private $decryptPath = '/decrypt';
+    private $createTokenPath = '/client-side-tokens';
     
     private $appKey;
 
@@ -267,7 +268,7 @@ class EvervaultHttp {
             'expiry' => $expiry,
         );
 
-        $response = $this->_makeCreateTokenRequest($payload);
+        $response = $this->_makeApiRequest('POST', $this->$createTokenPath, $payload, [], true);
 
         return $response;
     }

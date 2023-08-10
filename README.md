@@ -155,7 +155,7 @@ $evervault->createRunToken($functionName = string, $data = array or object)
 
 `$evervault->createClientSideDecryptToken()` creates a time-bound token that can be used to decrypt previously encrypted data.
 
-If the `$data` parameter is provided, the token can only be used to decrypt that specific payload. Otherwise, the token can be used to decrypt any payload.
+The `$data` parameter is required and ensures the token can only be used to decrypt that specific payload.
 
 The `$expiry` parameter sets the expiry for the token. It is UNIX time in seconds. It defaults to 5 minutes into the future if not provided. The max time is 10 minutes into the future.
 
