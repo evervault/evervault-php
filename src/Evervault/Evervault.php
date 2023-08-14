@@ -80,9 +80,9 @@ class Evervault {
         return $this->httpClient->decrypt($data);
     }
 
-    public function createClientSideDecryptToken($data, $expiry) {
+    public function createClientSideDecryptToken($data, $expiry = null) {
         if (!$data) {
-            throw new EvervaultError('Please provide a payload');
+            throw new EvervaultError('The `$data` parameter is required and ensures the issued token can only be used to decrypt that specific payload.');
         }
 
         if ($expiry) {
