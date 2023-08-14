@@ -89,7 +89,7 @@ class Evervault {
             $expiry = $expiry * 1000;
         }
         
-        return $this->httpClient->createToken("decrypt:api", $data, $expiry);
+        return $this->httpClient->createToken("api:decrypt", $data, $expiry);
     }
 
     public function run($functionName, $functionData, $options = ['version' => 0, 'async' => false]) {
