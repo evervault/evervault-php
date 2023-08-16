@@ -115,7 +115,13 @@ class EvervaultCrypto {
                 16
             );
 
-            $datatype = is_numeric($string) ? 'number:' : '';
+            if (is_numeric($string)) {
+                $datatype = 'number:';
+            } else if ($string === 'true' || $string === 'false') {
+                $datatype = 'boolean:';
+            } else {
+                $datatype = '';
+            }
         
             return $this->_format($datatype, $sharedSecret->ephemeralEcdhPublicKey, $iv, $enc . $tag);
         } else {
@@ -128,7 +134,11 @@ class EvervaultCrypto {
             return $this->_encryptArray($data);
         }
 
-        if (is_string($data) or is_numeric($data)) {
+        if (is_bool($data)) {
+            return $this->_encryptString($data ? 'true' : 'false');
+        }
+
+        if (is_string($data) || is_numeric($data)) {
             return $this->_encryptString($data);
         }
 

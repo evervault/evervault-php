@@ -86,7 +86,7 @@ class EvervaultHttp {
         );
     }
 
-    private function _handleApiResponse($curl, $response, $headers = []) {
+    private function _handleApiResponse($curl, $response, $headers = [], $associativeArray = false) {
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $requestedUrl = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
 
@@ -96,14 +96,14 @@ class EvervaultHttp {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
         } else if ($responseCode === 403) {
             throw new EvervaultError('Your API key does not have the required permissions to perform this action. You can update your API key permissions in the Evervault Dashboard.');
-        } else if ($responseCode !== 200 && $responseCode !== 201) {
+        } else if ($responseCode >= 400) {
             throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
         } else {
-            return json_decode($response);
+            return json_decode($response, $associativeArray);
         }
     }
 
-    private function _makeApiRequest($method, $path, $body = [], $headers = [], $basicAuth = false) {
+    private function _makeApiRequest($method, $path, $body = [], $headers = [], $basicAuth = false, $associativeArrayResponse = false) {
         curl_setopt(
             $this->curl, 
             CURLOPT_URL, 
@@ -140,7 +140,7 @@ class EvervaultHttp {
         );
 
         $response = curl_exec($this->curl);
-        return $this->_handleApiResponse($this->curl, $response, $headers);
+        return $this->_handleApiResponse($this->curl, $response, $headers, $associativeArrayResponse);
     }
 
     private function _makefunctionRunRequest($functionName, $body = [], $headers = []) {
@@ -191,8 +191,8 @@ class EvervaultHttp {
     public function decrypt($data) {
         $response = $this->_makeApiRequest('POST', $this->decryptPath, [
             'data' => $data
-        ], [], true);
-        return $response->data;
+        ], [], true, true);
+        return $response['data'];
     }
 
     public function createToken($action, $data, $expiry) {
