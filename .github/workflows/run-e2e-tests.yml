@@ -1,8 +1,7 @@
 name: Run PHPUnit Tests
 
 on:
-  push:  # This will run the workflow on every push event to any branch
-  pull_request:  # This will run the workflow for every pull request event on any branch
+  push:
 
 jobs:
   test:
@@ -10,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
+        php: ['8.1', '8.2']
 
     steps:
     - name: Checkout repository
@@ -28,3 +27,6 @@ jobs:
 
     - name: Run PHPUnit tests
       run: ./vendor/bin/phpunit tests/Evervault/e2e
+      env:
+        TEST_EV_APP_ID: ${{ secrets.TEST_EV_APP_ID }}
+        TEST_EV_API_KEY: ${{ secrets.TEST_EV_API_KEY }}
