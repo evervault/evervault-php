@@ -17,5 +17,4 @@ class ClientSideTokenTest extends EndToEndTestCase {
         $this->assertNotEmpty($response->id);
         $this->assertNotEmpty($response->token);
     }
-
 }

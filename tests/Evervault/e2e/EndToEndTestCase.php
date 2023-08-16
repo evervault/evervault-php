@@ -14,5 +14,4 @@ class EndToEndTestCase extends TestCase {
         $apiKey = getenv('TEST_EV_API_KEY');
         self::$evervaultClient = new Evervault($appId, $apiKey);
     }
-    
 }

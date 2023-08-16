@@ -30,6 +30,4 @@ class OutboundRelayTest extends EndToEndTestCase {
         
         curl_close($ch);
     }
-
-
 }

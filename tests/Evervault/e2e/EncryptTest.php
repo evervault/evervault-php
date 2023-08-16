@@ -63,5 +63,4 @@ class EncryptTest extends EndToEndTestCase {
         $decrypted = self::$evervaultClient->decrypt($encrypted);
         $this->assertEquals($obj, $decrypted);
     }
-    
 }
