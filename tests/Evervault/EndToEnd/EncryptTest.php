@@ -47,7 +47,7 @@ class EncryptTest extends EndToEndTestCase {
 
     public function testEncryptArray()
     {
-        $number = ["apple", 12345, 123.45];
+        $number = ["apple", 12345, 123.45, true, false];
         $encrypted = self::$evervaultClient->encrypt($number);
         $decrypted = self::$evervaultClient->decrypt($encrypted);
         $this->assertEquals($number, $decrypted);
@@ -58,7 +58,9 @@ class EncryptTest extends EndToEndTestCase {
         $obj = [
             "string" => "apple",
             "number" => 12345,
-            "double" => 123.45
+            "double" => 123.45,
+            "true" => true,
+            "false" => false
         ];
         $encrypted = self::$evervaultClient->encrypt($obj);
         $decrypted = self::$evervaultClient->decrypt($encrypted);
