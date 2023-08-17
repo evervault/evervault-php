@@ -26,7 +26,7 @@ jobs:
       run: composer install --prefer-dist --no-interaction --no-progress
 
     - name: Run PHPUnit tests
-      run: ./vendor/bin/phpunit tests/Evervault/e2e
+      run: ./vendor/bin/phpunit tests/Evervault/EndToEnd
       env:
         TEST_EV_APP_ID: ${{ secrets.TEST_EV_APP_ID }}
         TEST_EV_API_KEY: ${{ secrets.TEST_EV_API_KEY }}
