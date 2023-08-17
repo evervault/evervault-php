@@ -93,10 +93,10 @@ class Evervault {
         return $this->httpClient->createToken("api:decrypt", $data, $expiry);
     }
 
-    public function run($functionName, $functionData, $options = ['version' => 0, 'async' => false]) {
+    public function run($functionName, $functionData, $options = ['version' => null, 'async' => false]) {
         $additionalHeaders = [];
 
-        if (!is_null($options['version'])) {
+        if (isset($options['version'])) {
             if (!is_numeric($options['version'])) {
                 throw new EvervaultError('Function version must be a number');
             } else {

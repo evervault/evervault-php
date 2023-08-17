@@ -1,7 +1,8 @@
 <?php
 
-use Evervault\Evervault;
-use Evervault\Tests\e2e\EndToEndTestCase;
+namespace Evervault\Tests\EndToEnd;
+
+use Evervault\Tests\EndToEnd\EndToEndTestCase;
 
 class EncryptTest extends EndToEndTestCase {
 
@@ -10,7 +11,7 @@ class EncryptTest extends EndToEndTestCase {
         $bool = true;
         $encrypted = self::$evervaultClient->encrypt($bool);
         $decrypted = self::$evervaultClient->decrypt($encrypted);
-        $this->assertEquals($bool, $decrypted);
+        $this->assertTrue($decrypted);
     }
 
     public function testEncryptFalse()
@@ -18,7 +19,7 @@ class EncryptTest extends EndToEndTestCase {
         $bool = false;
         $encrypted = self::$evervaultClient->encrypt($bool);
         $decrypted = self::$evervaultClient->decrypt($encrypted);
-        $this->assertEquals($bool, $decrypted);
+        $this->assertFalse($decrypted);
     }
     public function testEncryptString()
     {

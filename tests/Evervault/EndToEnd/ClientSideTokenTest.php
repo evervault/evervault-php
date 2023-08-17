@@ -1,6 +1,8 @@
 <?php
 
-namespace Evervault\Tests\e2e;
+namespace Evervault\Tests\EndToEnd;
+
+use Evervault\Tests\EndToEnd\EndToEndTestCase;
 
 class ClientSideTokenTest extends EndToEndTestCase {
 
@@ -36,7 +38,6 @@ class ClientSideTokenTest extends EndToEndTestCase {
 
         $decrypted = $this->decrypt($response->token, $encrypted);
         $this->assertEquals($array, $decrypted);
-
     }
 
     private function decrypt($token, $payload) {
@@ -52,12 +53,8 @@ class ClientSideTokenTest extends EndToEndTestCase {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        if ($response === false) {
-            echo "Curl Error: " . curl_error($ch);
-        } else {
-            echo $response;
-        }
         curl_close($ch);
+        return json_decode($response, true);
     }
 
 }

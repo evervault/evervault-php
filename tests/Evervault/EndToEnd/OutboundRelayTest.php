@@ -1,15 +1,17 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Evervault\Evervault;
-use Evervault\Tests\e2e\EndToEndTestCase;
+namespace Evervault\Tests\EndToEnd;
+
+use Evervault\Tests\EndToEnd\EndToEndTestCase;
 
 class OutboundRelayTest extends EndToEndTestCase {
+
+    private const SYNTHETIC_ENDPOINT_URL = 'https://o54dbmzbcj.execute-api.us-east-2.amazonaws.com/production?uuid=php-sdk-run&mode=outbound';
 
     public function testEnableOutboundRelay() 
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://o54dbmzbcj.execute-api.us-east-2.amazonaws.com/production?uuid=token&mode=outbound');
+        curl_setopt($ch, CURLOPT_URL, self::SYNTHETIC_ENDPOINT_URL);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
             "string" => self::$evervaultClient->encrypt("some_string"),

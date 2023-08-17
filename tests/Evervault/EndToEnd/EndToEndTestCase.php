@@ -1,6 +1,6 @@
 <?php
 
-namespace Evervault\Tests\e2e;
+namespace Evervault\Tests\EndToEnd;
 
 use PHPUnit\Framework\TestCase;
 use Evervault\Evervault;
