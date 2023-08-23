@@ -13,6 +13,7 @@ class EvervaultHttp {
     private $appKeyPath = '/cages/key';
     private $relayConfigPath = '/v2/relay-outbound';
     private $decryptPath = '/decrypt';
+    private $createTokenPath = '/client-side-tokens';
     
     private $appKey;
 
@@ -47,6 +48,14 @@ class EvervaultHttp {
 
     private function _buildFunctionUrl($functionName) {
         return $this->functionRunBaseUrl . '/' . $functionName;
+    }
+
+    private function _decryptUrl() {
+        return $this->apiBaseUrl . '/decrypt';
+    }
+
+    private function _createTokenUrl() {
+        return $this->apiBaseUrl . '/client-side-tokens';
     }
 
     public function getAppEcdhKey() {
@@ -87,7 +96,7 @@ class EvervaultHttp {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
         } else if ($responseCode === 403) {
             throw new EvervaultError('Your API key does not have the required permissions to perform this action. You can update your API key permissions in the Evervault Dashboard.');
-        } else if ($responseCode !== 200) {
+        } else if ($responseCode !== 200 && $responseCode !== 201) {
             throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
         } else {
             return json_decode($response);
@@ -184,5 +193,17 @@ class EvervaultHttp {
             'data' => $data
         ], [], true);
         return $response->data;
+    }
+
+    public function createToken($action, $data, $expiry) {
+        $payload = array(
+            'action' => $action,
+            'payload' => $data,
+            'expiry' => $expiry,
+        );
+
+        $response = $this->_makeApiRequest('POST', $this->createTokenPath, $payload, [], true);
+
+        return $response;
     }
 }
