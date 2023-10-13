@@ -57,10 +57,11 @@ class EncryptTest extends EndToEndTestCase {
     {
         $obj = [
             "string" => "apple",
-            "number" => 12345,
-            "double" => 123.45,
+            "integer" => 12345,
+            "float" => 123.45,
             "true" => true,
-            "false" => false
+            "false" => false,
+            "array" => ["apple", 12345, 123.45, true, false]
         ];
         $encrypted = self::$evervaultClient->encrypt($obj);
         $decrypted = self::$evervaultClient->decrypt($encrypted);

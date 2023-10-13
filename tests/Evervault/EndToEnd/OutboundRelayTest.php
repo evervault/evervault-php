@@ -6,30 +6,51 @@ use Evervault\Tests\EndToEnd\EndToEndTestCase;
 
 class OutboundRelayTest extends EndToEndTestCase {
 
-    private const SYNTHETIC_ENDPOINT_URL = 'https://o54dbmzbcj.execute-api.us-east-2.amazonaws.com/production?uuid=php-sdk-run&mode=outbound';
+    private const OR_ENABLED_ENDPOINT_URL = 'https://o54dbmzbcj.execute-api.us-east-2.amazonaws.com/production?mode=outbound';
+    private const OR_DISABLED_ENDPOINT_URL = 'https://o54dbmzbcj-execute-api-us-east-2-amazonaws-com-app-3af8435b1a34.relay.evervault.com/production?mode=outbound';
 
     public function testEnableOutboundRelay() 
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, self::SYNTHETIC_ENDPOINT_URL);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-            "string" => self::$evervaultClient->encrypt("some_string"),
-            "number" => self::$evervaultClient->encrypt(1234567890),
-            "boolean" => self::$evervaultClient->encrypt(true),
-        ]));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
+        $data = [
+            "string" => "apple",
+            "number" => 12345,
+            "double" => 123.45,
+            "true" => true,
+            "false" => false
+        ];
+        $encrypted = self::$evervaultClient->encrypt($data);
 
-        self::$evervaultClient->enableOutboundRelay($ch);
-
-        $response = json_decode(curl_exec($ch), true);
+        // Request to Outbound Destination
+        $response = $this->makeRequest(self::OR_ENABLED_ENDPOINT_URL . "&uuid=php-sdk-test", $encrypted);
 
         $this->assertEquals($response['request']['string'], false);
         $this->assertEquals($response['request']['number'], false);
-        $this->assertEquals($response['request']['boolean'], false);
-        
+        $this->assertEquals($response['request']['double'], false);
+        $this->assertEquals($response['request']['true'], false);
+        $this->assertEquals($response['request']['false'], false);        
+
+        // Request outside Outbound Destination
+        $response = $this->makeRequest(self::OR_DISABLED_ENDPOINT_URL . "&uuid=php-sdk-test", $encrypted);
+
+        $this->assertEquals($response['request']['string'], true);
+        $this->assertEquals($response['request']['number'], true);
+        $this->assertEquals($response['request']['double'], true);
+        $this->assertEquals($response['request']['true'], true);
+        $this->assertEquals($response['request']['false'], true);
+    }
+
+    private function makeRequest($url, $payload)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
+        self::$evervaultClient->enableOutboundRelay($ch);
+        $response = json_decode(curl_exec($ch), true);
         curl_close($ch);
+        return $response;
     }
 }

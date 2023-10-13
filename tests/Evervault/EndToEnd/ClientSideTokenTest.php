@@ -8,28 +8,32 @@ class ClientSideTokenTest extends EndToEndTestCase {
 
     public function testCreateClientSideDecryptToken()
     {
-        $array = [
-            'name' => 'John Doe',
-            'age' => 42,
-            'isAlive' => true
+        $data = [
+            "string" => "apple",
+            "number" => 12345,
+            "double" => 123.45,
+            "true" => true,
+            "false" => false
         ];
-        $encrypted = self::$evervaultClient->encrypt($array);
+        $encrypted = self::$evervaultClient->encrypt($data);
         $response = self::$evervaultClient->createClientSideDecryptToken($encrypted);
         $this->assertNotEmpty($response->id);
         $this->assertNotEmpty($response->token);
 
         $decrypted = $this->decrypt($response->token, $encrypted);
-        $this->assertEquals($array, $decrypted);
+        $this->assertEquals($data, $decrypted);
     }
 
     public function testCreateClientSideDecryptTokenWithExpiry()
     {
-        $array = [
-            'name' => 'John Doe',
-            'age' => 42,
-            'isAlive' => true
+        $data = [
+            "string" => "apple",
+            "number" => 12345,
+            "double" => 123.45,
+            "true" => true,
+            "false" => false
         ];
-        $encrypted = self::$evervaultClient->encrypt($array);
+        $encrypted = self::$evervaultClient->encrypt($data);
         $expiry = time() + 5*60;
         $response = self::$evervaultClient->createClientSideDecryptToken($encrypted, $expiry);
         $this->assertNotEmpty($response->id);
@@ -37,12 +41,11 @@ class ClientSideTokenTest extends EndToEndTestCase {
         $this->assertEquals($expiry * 1000, $response->expiry);
 
         $decrypted = $this->decrypt($response->token, $encrypted);
-        $this->assertEquals($array, $decrypted);
+        $this->assertEquals($data, $decrypted);
     }
 
     private function decrypt($token, $payload) {
         $url = "https://api.evervault.com/decrypt";
-
         $ch = curl_init($url);
         $headers = [
             "authorization: Token $token",

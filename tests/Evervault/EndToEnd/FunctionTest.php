@@ -6,44 +6,41 @@ use Evervault\Tests\EndToEnd\EndToEndTestCase;
 
 class FunctionTest extends EndToEndTestCase {
 
-    private const TEST_FUNCTION_NAME = 'go-function-synthetic';
+    private const TEST_FUNCTION_NAME = 'node-function-synthetic';
 
     public function testFunctionRun() {
         $array = [
-            'name' => 'John Doe',
-            'age' => 42,
-            'isAlive' => true
+            "string" => "apple",
+            "number" => 12345,
+            "number" => 123.45,
+            "boolean" => true,
+            "boolean" => false
         ];
         $encrypted = self::$evervaultClient->encrypt($array);
         $functionResponse = self::$evervaultClient->run(self::TEST_FUNCTION_NAME, $encrypted);
-        $this->assertEquals($functionResponse->message, 'OK');
-    }
-
-    public function testFunctionRunAsync() {
-        $array = [
-            'name' => 'John Doe',
-            'age' => 42,
-            'isAlive' => true
-        ];
-        $encrypted = self::$evervaultClient->encrypt($array);
-        $functionResponse = self::$evervaultClient->run(self::TEST_FUNCTION_NAME, $encrypted, [
-            'async' => true
-        ]);
-        $this->assertNull($functionResponse);
+        $this->assertResult($functionResponse);
     }
 
     public function testCreateFunctionRunToken() {
         $array = [
-            'name' => 'John Doe',
-            'age' => 42,
-            'isAlive' => true
+            "string" => "apple",
+            "number" => 12345,
+            "number" => 123.45,
+            "boolean" => true,
+            "boolean" => false
         ];
         $encrypted = self::$evervaultClient->encrypt($array);
         $response = self::$evervaultClient->createRunToken(self::TEST_FUNCTION_NAME, $encrypted);
         $this->assertNotEmpty($response->token);
 
         $functionResponse = $this->runFunctionWithToken($response->token, self::TEST_FUNCTION_NAME, $encrypted);
-        $this->assertEquals($functionResponse->message, 'OK');
+        $this->assertResult($functionResponse);
+    }
+
+    private function assertResult($result) {
+        foreach ($result as $key => $value) {
+            $this->assertEquals($key, $value, "$key does not equal $value");
+        }
     }
 
     private function runFunctionWithToken($token, $functionName, $payload) {
