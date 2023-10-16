@@ -8,7 +8,7 @@ class EvervaultConfig {
 
     public function _construct() {
         $this->apiBaseUrl = getenv('EV_API_URL') || 'https://api.evervault.com';
-        $thus->functionRunBaseUrl = getenv('EV_CAGE_RUN_URL') || 'https://run.evervault.com';
+        $this->functionRunBaseUrl = getenv('EV_CAGE_RUN_URL') || 'https://run.evervault.com';
     }
 
     public function getApiBaseUrl() {
