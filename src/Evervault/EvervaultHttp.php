@@ -3,25 +3,22 @@
 namespace Evervault;
 
 class EvervaultHttp {
+    private const APP_KEY_PATH = '/cages/key';
+    private const RELAY_CONFIG_PATH = '/v2/relay-outbound';
+    private const DECRYPT_PATH = '/decrypt';
+    private const CREATE_TOKEN_PATH = '/client-side-tokens';
+    private const FUNCTION_RUNS_PATH = '/functions/%s/runs';
+
     private $apiKey;
     private $appUuid;
     private $apiBaseUrl;
-    private $functionRunBaseUrl;
 
     private $curl;
-
-    private $appKeyPath = '/cages/key';
-    private $relayConfigPath = '/v2/relay-outbound';
-    private $decryptPath = '/decrypt';
-    private $createTokenPath = '/client-side-tokens';
     
-    private $appKey;
-
-    function __construct($apiKey, $appUuid, $apiBaseUrl, $functionRunBaseUrl) {
+    function __construct($apiKey, $appUuid, $apiBaseUrl) {
         $this->apiKey = $apiKey;
         $this->appUuid = $appUuid;
         $this->apiBaseUrl = $apiBaseUrl;
-        $this->functionRunBaseUrl = $functionRunBaseUrl;
 
         $this->curl = curl_init();
     }
@@ -30,7 +27,7 @@ class EvervaultHttp {
         $defaultHeaders = [
             'content-type: application/json',
             'accept: application/json',
-            'user-agent: evervault-php/'.Evervault::VERSION
+            'user-agent: evervault-php/' . "0.0.1",
         ];
 
         if ($basicAuth) {
@@ -46,22 +43,10 @@ class EvervaultHttp {
         return $this->apiBaseUrl . $path;
     }
 
-    private function _buildFunctionUrl($functionName) {
-        return $this->functionRunBaseUrl . '/' . $functionName;
-    }
-
-    private function _decryptUrl() {
-        return $this->apiBaseUrl . '/decrypt';
-    }
-
-    private function _createTokenUrl() {
-        return $this->apiBaseUrl . '/client-side-tokens';
-    }
-
     public function getAppEcdhKey() {
         $appKeys = $this->_makeApiRequest(
             'GET',
-            $this->appKeyPath,
+            self::APP_KEY_PATH,
         );
 
         return (object) [
@@ -73,7 +58,7 @@ class EvervaultHttp {
     public function getAppRelayConfiguration() {
         $relayConfig = $this->_makeApiRequest(
             'GET',
-            $this->relayConfigPath,
+            self::RELAY_CONFIG_PATH,
         );
         return array_keys((array) $relayConfig->outboundDestinations);
     }
@@ -86,21 +71,22 @@ class EvervaultHttp {
         );
     }
 
-    private function _handleApiResponse($curl, $response, $headers = [], $associativeArray = false) {
+    private function _handleApiResponse($curl, $response, $associativeArray = false) {
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $requestedUrl = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
 
-        if ($responseCode === 401 and strncmp($requestedUrl, 'https://run.evervault.com/', strlen('https://run.evervault.com')) === 0) {
-            throw new EvervaultError('Your function could not be found. Please ensure you have deployed a function with the name you provided.');
-        } else if ($responseCode === 401) {
-            throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
+        if ($responseCode === 401) {
+            throw new EvervaultException('The provided API key is invalid. Please verify your API key or obtain a valid one in the Evervault Dashboard (App Settings > API Keys).');
         } else if ($responseCode === 403) {
-            throw new EvervaultError('Your API key does not have the required permissions to perform this action. You can update your API key permissions in the Evervault Dashboard.');
-        } else if ($responseCode >= 400) {
-            throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
-        } else {
-            return json_decode($response, $associativeArray);
+            throw new EvervaultException('The provided API key does not have the required permissions to perform this action. The API key permissions can be updated in the Evervault Dashboard (App Settings > API Keys).');
+        } else if ($responseCode >= 500) {
+            throw new EvervaultException('An unexpected error occurred. If the problem persists, reach out to our Support Team at support@evervault.com.');
         }
+
+        $jsonResponse = json_decode($response, false);
+        return [
+            'statusCode' => $responseCode,
+            'body' => $jsonResponse
+        ];
     }
 
     private function _makeApiRequest($method, $path, $body = [], $headers = [], $basicAuth = false, $associativeArrayResponse = false) {
@@ -140,56 +126,34 @@ class EvervaultHttp {
         );
 
         $response = curl_exec($this->curl);
-        return $this->_handleApiResponse($this->curl, $response, $headers, $associativeArrayResponse);
+        return $this->_handleApiResponse($this->curl, $response, $associativeArrayResponse);
     }
 
-    private function _makefunctionRunRequest($functionName, $body = [], $headers = []) {
-        $url = $this->_buildfunctionUrl($functionName);
+    public function runFunction($functionName, $functionPayload) {
+        $payload = [
+            'payload' => $functionPayload
+        ];
+        $response = $this->_makeApiRequest('POST', sprintf(self::FUNCTION_RUNS_PATH, $functionName), $payload, [], true);
+        $statusCode = $response['statusCode'];
+        $body = $response['body'];
 
-        curl_setopt(
-            $this->curl, 
-            CURLOPT_URL, 
-            $url
-        );
+        if ($statusCode < 400) {
 
-        curl_setopt(
-            $this->curl,
-            CURLOPT_HTTPHEADER,
-            array_merge(
-                $this->_getDefaultHeaders(), 
-                $headers
-            )
-        );
-
-        curl_setopt(
-            $this->curl,
-            CURLOPT_POSTFIELDS,
-            json_encode($body, JSON_FORCE_OBJECT)
-        );
-
-        curl_setopt(
-            $this->curl,
-            CURLOPT_RETURNTRANSFER,
-            true
-        );
-
-        $response = curl_exec($this->curl);
-
-        return $this->_handleApiResponse($this->curl, $response, $headers);
-    }
-
-    public function runFunction($functionName, $functionData, $additionalHeaders) {
-        $response = $this->_makefunctionRunRequest($functionName, $functionData, $additionalHeaders);
-
-        if (in_array('x-async: true', $additionalHeaders)) {
-            return $response;
         } else {
-            return $response->result;
+            if ($body->status === 'success') {
+                return $body->result;
+            } else {
+                if(strpos($body->error->message, "The function failed to initialize.")) {
+                    throw new FunctionInitializationException($body->error->message, $body->runId, $body->error->stack);
+                } else {
+                    throw new FunctionRuntimeException($body->error->message, $body->runId, $body->error->stack);
+                }
+            }
         }
     }
 
     public function decrypt($data) {
-        $response = $this->_makeApiRequest('POST', $this->decryptPath, [
+        $response = $this->_makeApiRequest('POST', self::DECRYPT_PATH, [
             'data' => $data
         ], [], true, true);
         return $response['data'];
@@ -202,7 +166,7 @@ class EvervaultHttp {
             'expiry' => $expiry,
         );
 
-        $response = $this->_makeApiRequest('POST', $this->createTokenPath, $payload, [], true);
+        $response = $this->_makeApiRequest('POST', self::CREATE_TOKEN_PATH, $payload, [], true);
 
         return $response;
     }

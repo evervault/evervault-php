@@ -2,13 +2,10 @@
 
 namespace Evervault;
 
-class Evervault {
-    const VERSION = '0.0.5';
-    
+class Evervault {    
     private $cryptoClient;
     private $httpClient;
     private $configClient;
-    private $outboundRelayCaFile;
     private $outboundRelayCaPath;
     private $relayAuthString;
     private $appKeys;
@@ -64,11 +61,11 @@ class Evervault {
         $this->_createCryptoClientIfNotExists();
 
         if (!isset($data) || $data === "") {
-            throw new EvervaultError('Please provide some data to encrypt.');
+            throw new EvervaultException('Please provide some data to encrypt.');
         }
 
         if (!(is_bool($data) || is_string($data) || is_array($data) || is_numeric($data))) {
-            throw new EvervaultError('The data to encrypt must be a string, number, boolean or array.');
+            throw new EvervaultException('The data to encrypt must be a string, number, boolean or array.');
         }
 
         return $this->cryptoClient->encryptData($data);
@@ -76,14 +73,14 @@ class Evervault {
 
     public function decrypt($data) {
         if (!$data || (!is_string($data) && !is_array($data))) {
-            throw new EvervaultError('`decrypt()` must be called with a string or an array.');
+            throw new EvervaultException('`decrypt()` must be called with a string or an array.');
         }
         return $this->httpClient->decrypt($data);
     }
 
     public function createClientSideDecryptToken($data, $expiry = null) {
         if (!$data) {
-            throw new EvervaultError('The `$data` parameter is required and ensures the issued token can only be used to decrypt that specific payload.');
+            throw new EvervaultException('The `$data` parameter is required and ensures the issued token can only be used to decrypt that specific payload.');
         }
 
         if ($expiry) {
@@ -93,22 +90,8 @@ class Evervault {
         return $this->httpClient->createToken("api:decrypt", $data, $expiry);
     }
 
-    public function run($functionName, $functionData, $options = ['version' => null, 'async' => false]) {
-        $additionalHeaders = [];
-
-        if (isset($options['version'])) {
-            if (!is_numeric($options['version'])) {
-                throw new EvervaultError('Function version must be a number');
-            } else {
-                $additionalHeaders[] = 'x-version-id: ' . $options['version'];
-            }
-        }
-
-        if ($options['async']) {
-            $additionalHeaders[] = 'x-async: true';
-        }
-
-        return $this->httpClient->runFunction($functionName, $functionData, $additionalHeaders);
+    public function run($functionName, $functionPayload) {
+        return $this->httpClient->runFunction($functionName, $functionPayload);
     }
 
     public function enableOutboundRelay($curlHandler) {

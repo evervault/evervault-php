@@ -128,7 +128,7 @@ class EvervaultCrypto {
         
             return $this->_format($datatype, $sharedSecret->ephemeralEcdhPublicKey, $iv, $enc . $tag);
         } else {
-            throw new EvervaultError('AES-256-GCM is not supported. Please upgrade to PHP >7.1.');
+            throw new EvervaultException('AES-256-GCM is not supported. Please upgrade to PHP >7.1.');
         }
     }
 
@@ -141,6 +141,6 @@ class EvervaultCrypto {
             return $this->_encryptValue($data);
         }
 
-        throw new EvervaultError('Data is not encryptable');
+        throw new EvervaultException('Data is not encryptable');
     }
 }
