@@ -49,7 +49,7 @@ jobs:
                 print;
             }
           ' CHANGELOG.md)
-          gh release create v$PACKAGE_VERSION -t "v$PACKAGE_VERSION" -n "$CHANGELOG"
+          gh release create v$COMMIT_TAG -t "v$COMMIT_TAG" -n "$CHANGELOG"
         else
           echo "No tag attached to HEAD. No new release needed."
         fi
