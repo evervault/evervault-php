@@ -90,13 +90,13 @@ class EvervaultCrypto {
 
     private function _encryptArray($array) {
         array_walk_recursive($array, function (&$value) {
-            $value = $this->_encryptString($value);
+            $value = $this->_encryptValue($value);
         });
 
         return $array;
     }
 
-    private function _encryptString($string) {
+    private function _encryptValue($value) {
         if (in_array($this->cipher, openssl_get_cipher_methods())) {
             $sharedSecret = $this->_deriveSharedSecret();
 
@@ -104,8 +104,19 @@ class EvervaultCrypto {
             $tag = '';
             $aad = $this->decodedAppEcdhP256Key;
 
+            $stringifiedValue = $value;
+
+            if (is_numeric($value)) {
+                $datatype = 'number:';
+            } else if (is_bool($value)) {
+                $datatype = 'boolean:';
+                $stringifiedValue = $value ? 'true' : 'false';
+            } else {
+                $datatype = '';
+            }
+
             $enc = openssl_encrypt(
-                $string,
+                $stringifiedValue,
                 'aes-256-gcm',
                 $sharedSecret->aesKey,
                 OPENSSL_RAW_DATA,
@@ -114,8 +125,6 @@ class EvervaultCrypto {
                 $aad,
                 16
             );
-
-            $datatype = is_numeric($string) ? 'number:' : '';
         
             return $this->_format($datatype, $sharedSecret->ephemeralEcdhPublicKey, $iv, $enc . $tag);
         } else {
@@ -128,8 +137,8 @@ class EvervaultCrypto {
             return $this->_encryptArray($data);
         }
 
-        if (is_string($data) or is_numeric($data)) {
-            return $this->_encryptString($data);
+        if (is_string($data) || is_numeric($data) || is_bool($data)) {
+            return $this->_encryptValue($data);
         }
 
         throw new EvervaultError('Data is not encryptable');

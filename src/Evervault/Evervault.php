@@ -62,20 +62,21 @@ class Evervault {
 
     public function encrypt($data) {
         $this->_createCryptoClientIfNotExists();
-        if (!$data) {
+
+        if (!isset($data) || $data === "") {
             throw new EvervaultError('Please provide some data to encrypt.');
         }
 
-        if (!(is_string($data) || is_array($data) || is_numeric($data))) {
-            throw new EvervaultError('The data to encrypt must be a string, number or object.');
+        if (!(is_bool($data) || is_string($data) || is_array($data) || is_numeric($data))) {
+            throw new EvervaultError('The data to encrypt must be a string, number, boolean or array.');
         }
 
         return $this->cryptoClient->encryptData($data);
     }
 
     public function decrypt($data) {
-        if (!$data) {
-            throw new EvervaultError('`decrypt()` must be called with a string or object.');
+        if (!$data || (!is_string($data) && !is_array($data))) {
+            throw new EvervaultError('`decrypt()` must be called with a string or an array.');
         }
         return $this->httpClient->decrypt($data);
     }
@@ -92,10 +93,10 @@ class Evervault {
         return $this->httpClient->createToken("api:decrypt", $data, $expiry);
     }
 
-    public function run($functionName, $functionData, $options = ['version' => 0, 'async' => false]) {
+    public function run($functionName, $functionData, $options = ['version' => null, 'async' => false]) {
         $additionalHeaders = [];
 
-        if (!is_null($options['version'])) {
+        if (isset($options['version'])) {
             if (!is_numeric($options['version'])) {
                 throw new EvervaultError('Function version must be a number');
             } else {
