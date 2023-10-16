@@ -188,7 +188,9 @@ $evervault->enableOutboundRelay($curlHandler = CurlHandle)
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/evervault/evervault-php.
+Bug reports and pull requests are welcome on GitHub at https://github.com/evervault/evervault-php/issues.
+
+Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for more details.
 
 ## Feedback
 
