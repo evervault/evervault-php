@@ -67,4 +67,37 @@ class EncryptTest extends EndToEndTestCase {
         $decrypted = self::$evervaultClient->decrypt($encrypted);
         $this->assertEquals($obj, $decrypted);
     }
+
+    public function testEncryptWithDataRole()
+    {
+        $data = [
+            "string" => "apple",
+            "integer" => 12345,
+            "float" => 123.45,
+            "true" => true,
+            "false" => false,
+            "array" => ["apple", 12345, 123.45, true, false]
+        ];
+        $encrypted = self::$evervaultClient->encrypt($data, "permit-all");
+        $decrypted = self::$evervaultClient->decrypt($encrypted);
+        $this->assertEquals($data, $decrypted);
+    }
+
+    public function testEncrytWithDataRoleForbiddingDecryption()
+    {
+        $this->expectException(\Evervault\EvervaultError::class);
+        $this->expectExceptionMessage('Decryption of the provided data is restricted by your current policies. Please check and modify your policies, if needed, to enable decryption in this context.');
+
+        $data = [
+            "string" => "apple",
+            "integer" => 12345,
+            "float" => 123.45,
+            "true" => true,
+            "false" => false,
+            "array" => ["apple", 12345, 123.45, true, false]
+        ];
+        $encrypted = self::$evervaultClient->encrypt($data, "forbid-all");
+        $decrypted = self::$evervaultClient->decrypt($encrypted);
+        $this->assertEquals($data, $decrypted);
+    }
 }

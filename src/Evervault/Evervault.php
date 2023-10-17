@@ -60,7 +60,7 @@ class Evervault {
         }
     }
 
-    public function encrypt($data) {
+    public function encrypt($data, $role = null) {
         $this->_createCryptoClientIfNotExists();
 
         if (!isset($data) || $data === "") {
@@ -71,7 +71,7 @@ class Evervault {
             throw new EvervaultError('The data to encrypt must be a string, number, boolean or array.');
         }
 
-        return $this->cryptoClient->encryptData($data);
+        return $this->cryptoClient->encryptData($data, $role);
     }
 
     public function decrypt($data) {
