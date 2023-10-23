@@ -2,6 +2,8 @@
 
 namespace Evervault;
 
+use Evervault\Exception\EvervaultException;
+
 class Evervault {    
     private $cryptoClient;
     private $httpClient;
@@ -61,11 +63,11 @@ class Evervault {
         $this->_createCryptoClientIfNotExists();
 
         if (!isset($data) || $data === "") {
-            throw new EvervaultException('Please provide some data to encrypt.');
+            throw new EvervaultException('No data provided: `encrypt()` must be called with a non-empty string, number, boolean, or array.');
         }
 
         if (!(is_bool($data) || is_string($data) || is_array($data) || is_numeric($data))) {
-            throw new EvervaultException('The data to encrypt must be a string, number, boolean or array.');
+            throw new EvervaultException('Invalid data type for encryption. Please ensure the input is of type string, number, boolean, or array.');
         }
 
         return $this->cryptoClient->encryptData($data);
@@ -73,21 +75,9 @@ class Evervault {
 
     public function decrypt($data) {
         if (!$data || (!is_string($data) && !is_array($data))) {
-            throw new EvervaultException('`decrypt()` must be called with a string or an array.');
+            throw new EvervaultException('`decrypt()` must be called with a non-empty string or array.');
         }
         return $this->httpClient->decrypt($data);
-    }
-
-    public function createClientSideDecryptToken($data, $expiry = null) {
-        if (!$data) {
-            throw new EvervaultException('The `$data` parameter is required and ensures the issued token can only be used to decrypt that specific payload.');
-        }
-
-        if ($expiry) {
-            $expiry = $expiry * 1000;
-        }
-        
-        return $this->httpClient->createToken("api:decrypt", $data, $expiry);
     }
 
     public function run($functionName, $functionPayload) {
@@ -115,6 +105,20 @@ class Evervault {
     }
 
     public function createRunToken($functionName, $payload = []) {
-        return $this->httpClient->createRunToken($functionName, $payload);
+        $response = $this->httpClient->createRunToken($functionName, $payload);
+        return new EvervaultToken($response['token']);
+    }
+
+    public function createClientSideDecryptToken($data, $expiry = null) {
+        if (!$data) {
+            throw new EvervaultException('The `$data` parameter is required and ensures the issued token can only be used to decrypt that specific payload.');
+        }
+
+        if ($expiry) {
+            $expiry = $expiry * 1000;
+        }
+        
+        $response = $this->httpClient->createToken("api:decrypt", $data, $expiry);
+        return new EvervaultToken($response['token']);
     }
 }

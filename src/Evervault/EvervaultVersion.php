@@ -2,4 +2,6 @@
 
 namespace Evervault;
 
-const VERSION = '0.1.0';
+class EvervaultVersion {
+    public const VERSION = '0.0.1';
+}

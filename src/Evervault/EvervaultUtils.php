@@ -2,6 +2,8 @@
 
 namespace Evervault;
 
+use Evervault\Exception\EvervaultException;
+
 class EvervaultUtils {
     public static function uuidv4() {
         $data = openssl_random_pseudo_bytes(16);  

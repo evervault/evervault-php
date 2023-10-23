@@ -2,6 +2,7 @@
 
 namespace Evervault;
 
+use Evervault\Exception\EvervaultException;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Serializer\Point\CompressedPointSerializer;
 use Mdanter\Ecc\Serializer\Point\UncompressedPointSerializer;
