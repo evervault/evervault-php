@@ -61,7 +61,7 @@ class EvervaultHttp {
     public function getAppEcdhKey() {
         $appKeys = $this->_makeApiRequest(
             'GET',
-            $this->appKeyPath,
+            $this->appKeyPath
         );
 
         return (object) [
@@ -73,7 +73,7 @@ class EvervaultHttp {
     public function getAppRelayConfiguration() {
         $relayConfig = $this->_makeApiRequest(
             'GET',
-            $this->relayConfigPath,
+            $this->relayConfigPath
         );
         return array_keys((array) $relayConfig->outboundDestinations);
     }
@@ -199,7 +199,7 @@ class EvervaultHttp {
         $payload = array(
             'action' => $action,
             'payload' => $data,
-            'expiry' => $expiry,
+            'expiry' => $expiry
         );
 
         $response = $this->_makeApiRequest('POST', $this->createTokenPath, $payload, [], true);
