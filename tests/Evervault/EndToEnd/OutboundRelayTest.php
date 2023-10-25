@@ -18,18 +18,18 @@ class OutboundRelayTest extends EndToEndTestCase {
             "true" => true,
             "false" => false
         ];
-        $encrypted = self::$evervaultClient->encrypt($data);
+        $encrypted = self::$evervaultClient->encrypt($data, "permit-all");
 
         // Request to Outbound Destination
         $response = $this->makeRequest(self::OR_ENABLED_ENDPOINT_URL . "&uuid=php-sdk-test", $encrypted);
-
+        
         $this->assertEquals($response['request']['string'], false);
         $this->assertEquals($response['request']['number'], false);
         $this->assertEquals($response['request']['double'], false);
         $this->assertEquals($response['request']['true'], false);
         $this->assertEquals($response['request']['false'], false);        
 
-        // Request outside Outbound Destination
+        // // Request outside Outbound Destination
         $response = $this->makeRequest(self::OR_DISABLED_ENDPOINT_URL . "&uuid=php-sdk-test", $encrypted);
 
         $this->assertEquals($response['request']['string'], true);

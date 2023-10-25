@@ -158,7 +158,7 @@ class EvervaultCrypto {
     }
 
     public function encryptData($data, $role = null) {
-        if (strlen($role) > 20) {
+        if ($role !== null && !preg_match('#^[a-z0-9-]{1,20}$#', $role)) {
             throw new EvervaultError('The provided Data Role slug is invalid.');
         }
 
