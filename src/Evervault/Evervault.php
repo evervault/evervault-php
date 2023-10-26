@@ -64,7 +64,7 @@ class Evervault {
         $this->_createCryptoClientIfNotExists();
 
         if (!isset($data) || $data === "") {
-            throw new ('Please provide some data to encrypt.');
+            throw new EvervaultError('Please provide some data to encrypt.');
         }
 
         if (!(is_bool($data) || is_string($data) || is_array($data) || is_numeric($data))) {
