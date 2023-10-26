@@ -64,7 +64,7 @@ class Evervault {
         $this->_createCryptoClientIfNotExists();
 
         if (!isset($data) || $data === "") {
-            throw new EvervaultError('Please provide some data to encrypt.');
+            throw new ('Please provide some data to encrypt.');
         }
 
         if (!(is_bool($data) || is_string($data) || is_array($data) || is_numeric($data))) {
@@ -98,7 +98,7 @@ class Evervault {
 
         if (isset($options['version'])) {
             if (!is_numeric($options['version'])) {
-                throw new EvervaultError('Function version must be a number');
+                throw new EvervaultError('Function version must be a number.');
             } else {
                 $additionalHeaders[] = 'x-version-id: ' . $options['version'];
             }

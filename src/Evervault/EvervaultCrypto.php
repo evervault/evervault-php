@@ -159,7 +159,7 @@ class EvervaultCrypto {
 
     public function encryptData($data, $role = null) {
         if ($role !== null && !preg_match('#^[a-z0-9-]{1,20}$#', $role)) {
-            throw new EvervaultError('The provided Data Role slug is invalid.');
+            throw new EvervaultError('The provided Data Role slug is invalid. The slug can be retrieved in the Evervault dashboard (Data Roles section).');
         }
 
         if (is_array($data)) {
@@ -170,6 +170,6 @@ class EvervaultCrypto {
             return $this->_encryptValue($data, $role);
         }
 
-        throw new EvervaultError('The provided data to be encrypted is invalid. Please ensure the data is either a string, number, boolean, or array');
+        throw new EvervaultError('The provided data to be encrypted is invalid. Please ensure the data is either a string, number, boolean, or array.');
     }
 }
