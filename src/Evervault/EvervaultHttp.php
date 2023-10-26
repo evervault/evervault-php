@@ -95,7 +95,12 @@ class EvervaultHttp {
         } else if ($responseCode === 401) {
             throw new EvervaultError('Your API key was invalid. Please verify it matches your API key in the Evervault Dashboard.');
         } else if ($responseCode === 403) {
-            throw new EvervaultError('Your API key does not have the required permissions to perform this action. You can update your API key permissions in the Evervault Dashboard.');
+            $json_response = json_decode($response);
+            if ($json_response->code === 'decrypt/forbidden') {
+                throw new EvervaultError($json_response->detail);
+            } else {
+                throw new EvervaultError('Your API key does not have the required permissions to perform this action. You can update your API key permissions in the Evervault Dashboard.');
+            }
         } else if ($responseCode >= 400) {
             throw new EvervaultError('There was an error initializing the Evervault SDK. Please try again or contact support@evervault.com for help.');
         } else {

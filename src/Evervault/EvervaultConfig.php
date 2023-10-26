@@ -3,12 +3,15 @@
 namespace Evervault;
 
 class EvervaultConfig {
-    public $apiBaseUrl = 'https://api.evervault.com';
-    public $functionRunBaseUrl = 'https://run.evervault.com';
+    private const DEFAULT_API_URL = 'https://api.evervault.com';
+    private const DEFAULT_RUN_URL = 'https://run.evervault.com';
 
-    public function _construct() {
-        $this->apiBaseUrl = getenv('EV_API_URL') || 'https://api.evervault.com';
-        $this->functionRunBaseUrl = getenv('EV_CAGE_RUN_URL') || 'https://run.evervault.com';
+    private $apiBaseUrl;
+    private $functionRunBaseUrl;
+
+    public function __construct() {
+        $this->apiBaseUrl = getenv('EV_API_URL') ?: self::DEFAULT_API_URL;
+        $this->functionRunBaseUrl = getenv('EV_CAGE_RUN_URL') ?: self::DEFAULT_RUN_URL;
     }
 
     public function getApiBaseUrl() {
