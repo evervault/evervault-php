@@ -77,7 +77,6 @@ class EvervaultHttp {
 
     private function _handleApiResponse($curl, $response) {
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
         $json = json_decode($response, true);
 
         if ($responseCode >= 400) {
@@ -160,7 +159,7 @@ class EvervaultHttp {
         $payload = array(
             'action' => $action,
             'payload' => $data,
-            'expiry' => $expiry,
+            'expiry' => $expiry
         );
 
         $response = $this->_makeApiRequest('POST', self::CREATE_TOKEN_PATH, $payload, [], true);

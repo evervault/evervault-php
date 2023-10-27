@@ -1,4 +1,4 @@
 vendor
-tests/test.php
+composer.lock
 node_modules
 package-lock.json

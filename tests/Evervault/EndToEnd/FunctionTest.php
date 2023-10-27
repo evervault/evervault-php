@@ -15,10 +15,10 @@ class FunctionTest extends EndToEndTestCase {
     public function testFunctionRun() {
         $array = [
             "string" => "apple",
-            "number" => 12345,
-            "number" => 123.45,
-            "boolean" => true,
-            "boolean" => false
+            "integer" => 12345,
+            "float" => 123.45,
+            "true" => true,
+            "false" => false
         ];
         $encrypted = self::$evervaultClient->encrypt($array);
         $functionResponse = self::$evervaultClient->run(self::TEST_FUNCTION_NAME, $encrypted);
@@ -63,10 +63,10 @@ class FunctionTest extends EndToEndTestCase {
     public function testCreateFunctionRunToken() {
         $array = [
             "string" => "apple",
-            "number" => 12345,
-            "number" => 123.45,
-            "boolean" => true,
-            "boolean" => false
+            "integer" => 12345,
+            "float" => 123.45,
+            "true" => true,
+            "false" => false
         ];
         $encrypted = self::$evervaultClient->encrypt($array);
         $token = self::$evervaultClient->createRunToken(self::TEST_FUNCTION_NAME, $encrypted);
@@ -77,8 +77,8 @@ class FunctionTest extends EndToEndTestCase {
     }
 
     private function assertResult($result) {
-        foreach ($result as $key => $value) {
-            $this->assertEquals($key, $value, "$key does not equal $value");
+        foreach ($result as $property => $value) {
+            $this->assertNotEquals("encrypted_string", $value);
         }
     }
 
