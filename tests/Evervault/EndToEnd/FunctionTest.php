@@ -2,9 +2,7 @@
 
 namespace Evervault\Tests\EndToEnd;
 
-use Evervault\Exception\FunctionInitializationException;
 use Evervault\Exception\FunctionRunException;
-use Evervault\Exception\FunctionRuntimeException;
 use Evervault\Tests\EndToEnd\EndToEndTestCase;
 
 class FunctionTest extends EndToEndTestCase {
@@ -22,7 +20,7 @@ class FunctionTest extends EndToEndTestCase {
         ];
         $encrypted = self::$evervaultClient->encrypt($array);
         $functionResponse = self::$evervaultClient->run(self::TEST_FUNCTION_NAME, $encrypted);
-        $this->assertResult($functionResponse);
+        $this->assertResult($functionResponse->getResult());
     }
 
     public function testFunctionRuntimeError() {

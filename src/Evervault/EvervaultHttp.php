@@ -4,7 +4,7 @@ namespace Evervault;
 
 use Evervault\Exception\EvervaultException;
 use Evervault\Exception\FunctionNotReadyException;
-use Evervault\Exception\FunctionRunException;
+use Evervault\Exception\FunctionTimeoutException;
 
 class EvervaultHttp {
     private const APP_KEY_PATH = '/cages/key';
@@ -86,7 +86,10 @@ class EvervaultHttp {
             }
 
             switch ($json['code']) {
-                case 'function/not-ready':
+                case 'functions/request-timeout':
+                    throw new FunctionTimeoutException($json['detail']);
+                    break;
+                case 'functions/function-not-ready':
                     throw new FunctionNotReadyException($json['detail']);
                     break;
                 default:
@@ -141,12 +144,7 @@ class EvervaultHttp {
         $payload = [
             'payload' => $functionPayload
         ];
-        $response = $this->_makeApiRequest('POST', sprintf(self::FUNCTION_RUNS_PATH, $functionName), $payload, [], true);
-        if ($response['status'] === 'success') {
-            return $response['result'];
-        } else {
-            throw new FunctionRunException($response['error']['message'], $response['id'], $response['error']['stack']);
-        }
+        return $this->_makeApiRequest('POST', sprintf(self::FUNCTION_RUNS_PATH, $functionName), $payload, [], true);
     }
 
     public function decrypt($data) {
@@ -162,9 +160,7 @@ class EvervaultHttp {
             'payload' => $data,
             'expiry' => $expiry,
         );
-
-        $response = $this->_makeApiRequest('POST', self::CREATE_TOKEN_PATH, $payload, [], true);
-
-        return $response;
+        
+        return $this->_makeApiRequest('POST', self::CREATE_TOKEN_PATH, $payload, [], true);
     }
 }

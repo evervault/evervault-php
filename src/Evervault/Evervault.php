@@ -3,6 +3,7 @@
 namespace Evervault;
 
 use Evervault\Exception\EvervaultException;
+use Evervault\Exception\FunctionRunException;
 
 class Evervault {    
     private $cryptoClient;
@@ -81,7 +82,12 @@ class Evervault {
     }
 
     public function run($functionName, $functionPayload) {
-        return $this->httpClient->runFunction($functionName, $functionPayload);
+        $response = $this->httpClient->runFunction($functionName, $functionPayload);
+        if ($response['status'] === 'success') {
+            return new FunctionRun($response['id'], $response['result']);
+        } else {
+            throw new FunctionRunException($response['error']['message'], $response['id'], $response['error']['stack']);
+        }   
     }
 
     public function enableOutboundRelay($curlHandler) {
