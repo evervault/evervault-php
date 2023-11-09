@@ -38,12 +38,33 @@ class EvervaultCrypto {
 
     private function _format($datatype, $ephemeralEcdhPublicKey, $keyIv, $encryptedData) {
         return sprintf(
-            "ev:Tk9D:%s%s:%s:%s:$", 
+            "ev:TENZ:%s%s:%s:%s:$", 
             $datatype, 
             EvervaultUtils::base64url_encode($keyIv), 
             EvervaultUtils::base64url_encode($ephemeralEcdhPublicKey), 
             EvervaultUtils::base64url_encode($encryptedData)
         );
+    }
+
+    private function _generateMetadata($role) {
+        $buffer = '';
+        $buffer .= pack('C', 0x80 | (empty($role) ? 2 : 3)); // Binary representation of a fixed map with 2 or 3 items, followed by the key-value pairs
+
+        if(!empty($role)) {
+            // `dr` (data role) => role_name
+            $buffer .= pack('C', 0xA2) . 'dr'; // Binary representation for a fixed string of length 2, followed by `dr`
+            $buffer .= pack('C', 0xA0 | strlen($role)) . $role; // Binary representation for a fixed string of role name length, followed by the role name itself
+        }
+
+        // "eo" (encryption origin) => 10 (PHP SDK)
+        $buffer .= pack('C', 0xA2) . 'eo'; // Binary representation for a fixed string of length 2, followed by `eo`
+        $buffer .= pack('C', 10); // Binary representation for the integer 10
+
+        // "et" (encryption timestamp) => current time
+        $buffer .= pack('C', 0xA2) . 'et'; // Binary representation for a fixed string of length 2, followed by `et`
+        $buffer .= pack('C', 0xCE) . pack('N', time()); // Binary representation for a  4-byte unsigned integer (uint 32), followed by the epoch time
+
+        return $buffer;
     }
 
     private function _deriveSharedSecret() {
@@ -89,15 +110,15 @@ class EvervaultCrypto {
         ];
     }
 
-    private function _encryptArray($array) {
-        array_walk_recursive($array, function (&$value) {
-            $value = $this->_encryptValue($value);
+    private function _encryptArray($array, $role) {
+        array_walk_recursive($array, function (&$value) use($role) {
+            $value = $this->_encryptValue($value, $role);
         });
 
         return $array;
     }
 
-    private function _encryptValue($value) {
+    private function _encryptValue($value, $role) {
         if (in_array($this->cipher, openssl_get_cipher_methods())) {
             $sharedSecret = $this->_deriveSharedSecret();
 
@@ -116,8 +137,12 @@ class EvervaultCrypto {
                 $datatype = '';
             }
 
+            $metadata = $this->_generateMetadata($role);
+            $metadataOffset = pack('v', strlen($metadata)); // 'v' specifies 16-bit unsigned little-endian
+            $payload = $metadataOffset . $metadata . $stringifiedValue;
+
             $enc = openssl_encrypt(
-                $stringifiedValue,
+                $payload,
                 'aes-256-gcm',
                 $sharedSecret->aesKey,
                 OPENSSL_RAW_DATA,
@@ -133,15 +158,19 @@ class EvervaultCrypto {
         }
     }
 
-    public function encryptData($data) {
+    public function encryptData($data, $role = null) {
+        if ($role !== null && !preg_match('#^[a-z0-9-]{1,20}$#', $role)) {
+            throw new EvervaultError('The provided Data Role slug is invalid. The slug can be retrieved in the Evervault dashboard (Data Roles section).');
+        }
+
         if (is_array($data)) {
-            return $this->_encryptArray($data);
+            return $this->_encryptArray($data, $role);
         }
 
         if (is_string($data) || is_numeric($data) || is_bool($data)) {
-            return $this->_encryptValue($data);
+            return $this->_encryptValue($data, $role);
         }
 
-        throw new EvervaultException('Data is not encryptable');
+        throw new EvervaultError('The provided data to be encrypted is invalid. Please ensure the data is either a string, number, boolean, or array.');
     }
 }
