@@ -85,7 +85,7 @@ class EncryptTest extends EndToEndTestCase {
 
     public function testEncrytWithDataRoleForbiddingDecryption()
     {
-        $this->expectException(\Evervault\EvervaultError::class);
+        $this->expectException(\Evervault\Exception\EvervaultException::class);
         $this->expectExceptionMessage('Decryption of the provided data is restricted by your current policies. Please check and modify your policies, if needed, to enable decryption in this context.');
 
         $data = [
