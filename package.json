@@ -2,6 +2,9 @@
     "name": "evervault-php",
     "private": true,
     "version": "0.0.9",
+    "scripts": {
+        "version": "changeset version && PACKAGE_VERSION=$(node -p \"require('./package.json').version\") && sed -i \"s/\\(VERSION = '\\)[^']*'/\\1$PACKAGE_VERSION'/\" src/Evervault/EvervaultVersion.php"
+    },
     "devDependencies": {
         "@changesets/cli": "^2.26.2"
     }

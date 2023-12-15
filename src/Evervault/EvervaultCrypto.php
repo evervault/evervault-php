@@ -2,6 +2,7 @@
 
 namespace Evervault;
 
+use Evervault\Exception\EvervaultException;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Serializer\Point\CompressedPointSerializer;
 use Mdanter\Ecc\Serializer\Point\UncompressedPointSerializer;
@@ -153,13 +154,13 @@ class EvervaultCrypto {
         
             return $this->_format($datatype, $sharedSecret->ephemeralEcdhPublicKey, $iv, $enc . $tag);
         } else {
-            throw new EvervaultError('AES-256-GCM is not supported. Please upgrade to PHP >7.1.');
+            throw new EvervaultException('AES-256-GCM is not supported. Please upgrade to PHP >7.1.');
         }
     }
 
     public function encryptData($data, $role = null) {
         if ($role !== null && !preg_match('#^[a-z0-9-]{1,20}$#', $role)) {
-            throw new EvervaultError('The provided Data Role slug is invalid. The slug can be retrieved in the Evervault dashboard (Data Roles section).');
+            throw new EvervaultException('The provided Data Role slug is invalid. The slug can be retrieved in the Evervault dashboard (Data Roles section).');
         }
 
         if (is_array($data)) {
@@ -170,6 +171,6 @@ class EvervaultCrypto {
             return $this->_encryptValue($data, $role);
         }
 
-        throw new EvervaultError('The provided data to be encrypted is invalid. Please ensure the data is either a string, number, boolean, or array.');
+        throw new EvervaultException('The provided data to be encrypted is invalid. Please ensure the data is either a string, number, boolean, or array.');
     }
 }

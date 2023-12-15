@@ -2,6 +2,8 @@
 
 namespace Evervault;
 
+use Evervault\Exception\EvervaultException;
+
 class EvervaultUtils {
     public static function uuidv4() {
         $data = openssl_random_pseudo_bytes(16);  
@@ -33,22 +35,22 @@ class EvervaultUtils {
 
     public static function validateAppUuidAndApiKey($appUuid, $apiKey) {
         if (!$appUuid) {
-            throw new EvervaultError('No App ID provided. The App ID can be retrieved in the Evervault dashboard (App Settings).');
+            throw new EvervaultException('No App ID provided. The App ID can be retrieved in the Evervault dashboard (App Settings).');
         }
 
         if (strpos($appUuid, "app_") !== 0) {
-            throw new EvervaultError('The provided App ID is invalid. The App ID can be retrieved in the Evervault dashboard (App Settings).');
+            throw new EvervaultException('The provided App ID is invalid. The App ID can be retrieved in the Evervault dashboard (App Settings).');
         }
 
         if (!$apiKey) {
-            throw new EvervaultError('No API key provided. An API Key can be created in the Evervault dashboard.');
+            throw new EvervaultException('No API key provided. An API Key can be created in the Evervault dashboard (App Settings > API Keys).');
         }
 
         if (substr($apiKey, 0, 3) == 'ev:') {
             $appUuidHash = substr(base64_encode(hash('sha512', $appUuid, true)), 0, 6);
             $appUuidHashFromApiKey = explode(':', $apiKey)[4];
             if ($appUuidHash !== $appUuidHashFromApiKey) {
-                throw new EvervaultError('The provided API key does not belong to the App '. $appUuid . '.');
+                throw new EvervaultException('The provided API key does not belong to the App '. $appUuid . '.');
             }
         }
     }

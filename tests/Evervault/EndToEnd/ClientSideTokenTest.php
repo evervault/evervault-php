@@ -16,11 +16,9 @@ class ClientSideTokenTest extends EndToEndTestCase {
             "false" => false
         ];
         $encrypted = self::$evervaultClient->encrypt($data);
-        $response = self::$evervaultClient->createClientSideDecryptToken($encrypted);
-        $this->assertNotEmpty($response->id);
-        $this->assertNotEmpty($response->token);
+        $token = self::$evervaultClient->createClientSideDecryptToken($encrypted);
 
-        $decrypted = $this->decrypt($response->token, $encrypted);
+        $decrypted = $this->decrypt($token->token, $encrypted);
         $this->assertEquals($data, $decrypted);
     }
 
@@ -35,12 +33,9 @@ class ClientSideTokenTest extends EndToEndTestCase {
         ];
         $encrypted = self::$evervaultClient->encrypt($data);
         $expiry = time() + 5*60;
-        $response = self::$evervaultClient->createClientSideDecryptToken($encrypted, $expiry);
-        $this->assertNotEmpty($response->id);
-        $this->assertNotEmpty($response->token);
-        $this->assertEquals($expiry * 1000, $response->expiry);
+        $token = self::$evervaultClient->createClientSideDecryptToken($encrypted, $expiry);
 
-        $decrypted = $this->decrypt($response->token, $encrypted);
+        $decrypted = $this->decrypt($token->token, $encrypted);
         $this->assertEquals($data, $decrypted);
     }
 
