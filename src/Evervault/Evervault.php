@@ -4,6 +4,7 @@ namespace Evervault;
 
 use Evervault\Exception\EvervaultException;
 use Evervault\Exception\FunctionRunException;
+use Evervault\EvervaultUtils;
 
 class Evervault {    
     private $cryptoClient;
