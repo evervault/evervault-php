@@ -2,8 +2,6 @@
 
 namespace Evervault\Tests\EndToEnd;
 
-use Evervault\Tests\EndToEnd\EndToEndTestCase;
-
 class EncryptTest extends EndToEndTestCase {
 
     public function testEncryptTrue()

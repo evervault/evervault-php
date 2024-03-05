@@ -13,10 +13,9 @@ class EvervaultHttp {
     private $appKeyPath = '/cages/key';
     private $relayConfigPath = '/v2/relay-outbound';
     private $decryptPath = '/decrypt';
+    private $inspectPath = '/inspect';
     private $createTokenPath = '/client-side-tokens';
     
-    private $appKey;
-
     function __construct($apiKey, $appUuid, $apiBaseUrl, $functionRunBaseUrl) {
         $this->apiKey = $apiKey;
         $this->appUuid = $appUuid;
@@ -198,6 +197,10 @@ class EvervaultHttp {
             'data' => $data
         ], [], true, true);
         return $response['data'];
+    }
+
+    public function inspect($encryptedString) {
+        return $this->_makeApiRequest('POST', $this->inspectPath, $encryptedString, [], true, true);
     }
 
     public function createToken($action, $data, $expiry) {

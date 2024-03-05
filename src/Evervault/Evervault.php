@@ -81,6 +81,18 @@ class Evervault {
         return $this->httpClient->decrypt($data);
     }
 
+    public function inspect($encryptedString) {
+        if (!$encryptedString || !is_string($encryptedString)) {
+            throw new EvervaultError('`inspect()` must be called with a string.');
+        }
+        $apiResponse = $this->httpClient->inspect($encryptedString);
+        if($apiResponse['category'] === 'card-number') {
+            return EncryptedCardNumberMetadata::fromApiResponse($apiResponse);          
+        } else {
+            return EncryptedStringMetadata::fromApiResponse($apiResponse);
+        }
+    }
+
     public function createClientSideDecryptToken($data, $expiry = null) {
         if (!$data) {
             throw new EvervaultError('The `$data` parameter is required and ensures the issued token can only be used to decrypt that specific payload.');
