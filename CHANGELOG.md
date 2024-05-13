@@ -1,5 +1,11 @@
 # evervault-php
 
+## 0.1.1
+
+### Patch Changes
+
+- aa6fbc0: update crypto scheme
+
 ## 0.1.0
 
 ### Minor Changes
