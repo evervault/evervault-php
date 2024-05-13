@@ -37,7 +37,7 @@ class EvervaultCrypto {
 
     private function _format($datatype, $ephemeralEcdhPublicKey, $keyIv, $encryptedData) {
         return sprintf(
-            "ev:TENZ:%s%s:%s:%s:$", 
+            "ev:QkTC:%s%s:%s:%s:$", 
             $datatype, 
             EvervaultUtils::base64url_encode($keyIv), 
             EvervaultUtils::base64url_encode($ephemeralEcdhPublicKey), 
@@ -117,6 +117,38 @@ class EvervaultCrypto {
         return $array;
     }
 
+    private function _createV2Aad($dataType, $ephemeralPublicKeyBytes, $appPublicKeyBytes) {
+        $dataTypeNumber = 0; // Default to String
+
+        if ($dataType === 'number:') {
+            $dataTypeNumber = 1;
+        } elseif ($dataType === 'boolean:') {
+            $dataTypeNumber = 2;
+        }
+
+        $versionNumber = 1; // PHP only supports QkTC
+
+        if ($versionNumber === null) {
+            throw new Exception('This encryption version does not have a version number for AAD');
+        }
+
+        $configByteSize = 1;
+        $totalSize = $configByteSize + strlen($ephemeralPublicKeyBytes) + strlen($appPublicKeyBytes);
+        $aad = str_repeat("\0", $totalSize); // Create a binary string initialized with null bytes
+
+        // Set the configuration byte
+        $b = 0x00 | ($dataTypeNumber << 4) | $versionNumber; // PHP doesn't support debug strings, so always start with 0x00
+        $aad[0] = chr($b); // Convert the number to a character and set it to the first position
+
+        // Copy ephemeral public key bytes into aad
+        $aad = substr_replace($aad, $ephemeralPublicKeyBytes, $configByteSize, strlen($ephemeralPublicKeyBytes));
+
+        // Copy application public key bytes into aad
+        $aad = substr_replace($aad, $appPublicKeyBytes, $configByteSize + strlen($ephemeralPublicKeyBytes), strlen($appPublicKeyBytes));
+
+        return $aad;
+    }
+
     private function _encryptValue($value, $role) {
         if (in_array($this->cipher, openssl_get_cipher_methods())) {
             $sharedSecret = $this->_deriveSharedSecret();
@@ -135,6 +167,8 @@ class EvervaultCrypto {
             } else {
                 $datatype = '';
             }
+
+            $aad = $this->_createV2Aad($datatype, $sharedSecret->ephemeralEcdhPublicKey, $aad);
 
             $metadata = $this->_generateMetadata($role);
             $metadataOffset = pack('v', strlen($metadata)); // 'v' specifies 16-bit unsigned little-endian
