@@ -155,7 +155,6 @@ class EvervaultCrypto {
 
             $iv = $this->_generateBytes(12);
             $tag = '';
-            $aad = $this->decodedAppEcdhP256Key;
 
             $stringifiedValue = $value;
 
