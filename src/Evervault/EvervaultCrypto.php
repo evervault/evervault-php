@@ -167,7 +167,7 @@ class EvervaultCrypto {
                 $datatype = '';
             }
 
-            $aad = $this->_createV2Aad($datatype, $sharedSecret->ephemeralEcdhPublicKey, $aad);
+            $aad = $this->_createV2Aad($datatype, $sharedSecret->ephemeralEcdhPublicKey, $this->decodedAppEcdhP256Key);
 
             $metadata = $this->_generateMetadata($role);
             $metadataOffset = pack('v', strlen($metadata)); // 'v' specifies 16-bit unsigned little-endian
