@@ -10,20 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7
 
     - name: Get tags
       run: git fetch --tags origin
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v6
 
     - name: Install changeset dependencies
       run: npm install 
 
     - name: Create Release Pull Request
       id: changesets
-      uses: changesets/action@v1
+      uses: changesets/action@v2
       with:
         title: 'New Release'
         commit: 'Release new version'

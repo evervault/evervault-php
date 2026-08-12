@@ -8,11 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
+        php-versions: ['7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
         phpunit-versions: ['latest']
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7
 
     - name: Setup PHP ${{ matrix.php-versions }}
       uses: shivammathur/setup-php@v2
@@ -26,7 +26,7 @@ jobs:
       run: echo "::set-output name=dir::$(composer config cache-files-dir)"
   
     - name: Cache dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v6
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -40,3 +40,4 @@ jobs:
       env:
         TEST_EV_APP_ID: ${{ secrets.TEST_EV_APP_ID }}
         TEST_EV_API_KEY: ${{ secrets.TEST_EV_API_KEY }}
+
