@@ -12,7 +12,7 @@
       devShells = forAllSystems (pkgs:
         let
           php = pkgs.php.withExtensions ({ enabled, all }:
-            enabled ++ (with all; [ curl openssl mbstring ]));
+            enabled ++ (with all; [ curl openssl mbstring gmp ]));
         in
         {
           default = pkgs.mkShell {

@@ -104,7 +104,7 @@ class Evervault {
             }
         }
 
-        if ($options['async']) {
+        if (!empty($options['async'])) {
             $additionalHeaders[] = 'x-async: true';
         }
 
