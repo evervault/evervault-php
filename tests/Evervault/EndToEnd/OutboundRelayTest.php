@@ -51,7 +51,6 @@ class OutboundRelayTest extends EndToEndTestCase {
           self::$evervaultClient->enableOutboundRelay($ch);
         }
         $response = json_decode(curl_exec($ch), true);
-        curl_close($ch);
         return $response;
     }
 }
