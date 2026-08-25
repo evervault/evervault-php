@@ -20,6 +20,7 @@
               php
               php.packages.composer
               pkgs.nodejs
+              pkgs.git
             ];
           };
         });
