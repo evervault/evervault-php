@@ -1,5 +1,5 @@
 ---
-"evervault-php": major
+"evervault-php": minor
 ---
 
 Require PHP 8.4 or later, and declare the `gmp` extension the SDK has always depended on.
