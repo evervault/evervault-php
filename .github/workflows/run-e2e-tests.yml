@@ -40,4 +40,5 @@ jobs:
       env:
         TEST_EV_APP_ID: ${{ secrets.TEST_EV_APP_ID }}
         TEST_EV_API_KEY: ${{ secrets.TEST_EV_API_KEY }}
+        EV_SYNTHETIC_ENDPOINT_URL: ${{ secrets.EV_SYNTHETIC_ENDPOINT_URL }}
 
