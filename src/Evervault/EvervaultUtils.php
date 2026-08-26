@@ -18,7 +18,11 @@ class EvervaultUtils {
     }
 
     public static function isDecryptionDomain($domain, $decryptionDomains) {
-        $domain = parse_url($domain)['host'];
+        $domain = parse_url($domain, PHP_URL_HOST);
+
+        if (!is_string($domain)) {
+            return false;
+        }
 
         foreach ($decryptionDomains as $decryptionDomain) {
             if ($decryptionDomain === $domain) {
