@@ -23,7 +23,7 @@ jobs:
 
     - name: Create Release Pull Request
       id: changesets
-      uses: changesets/action@v2
+      uses: changesets/action@v1
       with:
         title: 'New Release'
         commit: 'Release new version'
