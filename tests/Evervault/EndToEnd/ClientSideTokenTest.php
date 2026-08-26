@@ -56,7 +56,6 @@ class ClientSideTokenTest extends EndToEndTestCase {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        curl_close($ch);
         return json_decode($response, true);
     }
 

@@ -129,7 +129,7 @@ class EvervaultCrypto {
         $versionNumber = 1; // PHP only supports QkTC
 
         if ($versionNumber === null) {
-            throw new Exception('This encryption version does not have a version number for AAD');
+            throw new EvervaultError('This encryption version does not have a version number for AAD');
         }
 
         $configByteSize = 1;
