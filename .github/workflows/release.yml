@@ -33,7 +33,7 @@ jobs:
     - name: Create new release
       if: steps.changesets.outputs.has-changesets == 'false'
       run: |
-        npx changeset tag && git push origin --tags
+        npx changeset git-tag && git push origin --tags
         COMMIT_TAG=$(git tag --points-at HEAD)
         if [ -n "$COMMIT_TAG" ]; then
           echo "A tag is attached to HEAD. Creating a new release..."
